@@ -1,13 +1,4 @@
-import pico2d
-
-client_w, client_h = 800, 600
-
-#Game Object
-class Player:
-    def __init__(self):
-        self.x = ClientWidth / 2
-        self.life = 3
-
+from Global import *
 
 def game_opening():
     pass
@@ -29,6 +20,7 @@ pico2d.open_canvas()
 game_opening()
 isEnd = False
 
+# 게임 루프
 while not isEnd:
     rendering()
     update()
