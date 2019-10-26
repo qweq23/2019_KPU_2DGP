@@ -1,16 +1,17 @@
 from Galaga.Global import *
-import
+import os
 
+print (os.getcwd())
+background = load_image('background.png')
 
-background = load_image("Galaga/Image/background_basic.png")
 
 def game_opening():
     pass
 
 
 def rendering():
-    #global background_image
-    #background_image.draw()
+    global background
+    background.draw()
     pass
 
 
@@ -29,10 +30,6 @@ def handle_events():
     pass
 
 
-
-file_name_list = os.listdir()
-for name in file_name_list:
-    print(name)
 
 pico2d.open_canvas(CONST_CLIENT_WIDTH, CONST_CLIENT_HEIGHT)
 
