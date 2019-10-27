@@ -5,13 +5,25 @@ import state_main
 
 name = "TitleState"
 background_image = None
-
+title_image = None
+frame = 0
 
 
 def enter():
-    pass
+    global background_image
+    global title_image
+    title_image = [load_image('Image/title_Galaga0.png'), load_image('Image/title_Galaga1.png'),
+                   load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga3.png'),
+                   load_image('Image/title_Galaga4.png'), load_image('Image/title_Galaga3.png'),
+                   load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga1.png')]
+
 def exit():
-    pass
+    global background_image
+    global title_image
+
+    del background_image
+    del title_image
+
 
 def pause():
     pass
@@ -30,6 +42,14 @@ def handle_events():
 
 
 def update():
-    pass
+    global frame
+    frame = (frame + 1) % 8
+    delay(0.1)
+
 def draw():
-    pass
+    global background_image
+    global title_image
+
+    clear_canvas()
+    title_image[frame].draw(framework.CLIENT_WIDTH / 2, 500)
+    update_canvas()
