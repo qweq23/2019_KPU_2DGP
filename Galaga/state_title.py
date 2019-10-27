@@ -12,6 +12,7 @@ frame = 0
 def enter():
     global background_image
     global title_image
+    background_image = load_image('Image/title_background.png')
     title_image = [load_image('Image/title_Galaga0.png'), load_image('Image/title_Galaga1.png'),
                    load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga3.png'),
                    load_image('Image/title_Galaga4.png'), load_image('Image/title_Galaga3.png'),
@@ -36,7 +37,7 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
-        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_k):
+        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_RETURN):
             framework.change_state(state_main)
 
 
@@ -51,5 +52,6 @@ def draw():
     global title_image
 
     clear_canvas()
+    background_image.draw(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
     title_image[frame].draw(framework.CLIENT_WIDTH / 2, 500)
     update_canvas()
