@@ -1,6 +1,5 @@
 from pico2d import *
 
-import gameworld
 
 PLAYER_POSITION_Y = 50
 PLAYER_SIZE = 50
@@ -68,3 +67,16 @@ class Bullet:
 
         # 적에 맞았나 충돌체크는 어떻게..?
         # 게임 오브젝트들이 놓여있고, 서로 상호작용 하는 공간이 필요하다...!
+
+
+class Enemy:
+    pass
+
+class Bee(Enemy):
+    pass
+
+class Butterfly(Enemy):
+    pass
+
+class Moth(Enemy):
+    pass
