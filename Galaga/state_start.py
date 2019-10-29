@@ -3,6 +3,8 @@ from pico2d import *
 
 import state_title
 
+
+
 name = "StartState"
 image = None
 logo_time = 0.0
