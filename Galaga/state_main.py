@@ -10,7 +10,6 @@ background_front_stars1 = None
 background_front_stars2 = None
 background_front_frame = 0
 player = None
-bullet = None
 
 front_stars_pos = 0
 # 별: x = 300, y = 400 ~ 1200
@@ -20,18 +19,18 @@ def enter():
     global background_front_stars1
     global background_front_stars2
     global player
-    global bullet
+
     background_image = load_image('Image/background_basic.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
-    # background_image.cli
-    bullet = Bullet(300)
+
 
 def exit():
     global background_image
     global background_front_stars1
     global background_front_stars2
+
     del background_image
     del background_front_stars1
     del background_front_stars2
@@ -57,12 +56,9 @@ def update():
     global front_stars_pos
     global background_front_frame
     player.update_position()
-    bullet.update_position()
-    bullet.detect_collision()
-    front_stars_pos += 1
+    front_stars_pos = (front_stars_pos + 1) % 800
     background_front_frame = (background_front_frame + 1) % 200
-    if front_stars_pos == 800:
-        front_stars_pos = 0
+
 
 
 def draw():
@@ -80,6 +76,5 @@ def draw():
         background_front_stars2.clip_draw(0, front_stars_pos, 600, 800, 300, 400)
 
     player.draw()
-    bullet.draw()
     update_canvas()
 
