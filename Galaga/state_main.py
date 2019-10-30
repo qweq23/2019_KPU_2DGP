@@ -1,7 +1,7 @@
 import framework
 from pico2d import *
 
-from gameobject import *
+from Player import *
 
 
 # 변수 선언

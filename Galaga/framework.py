@@ -1,7 +1,6 @@
 # 클래스
 class GameState:
     def __init__(self, state):
-        # 게임 state는 이 7개의 함수롤 모두 가져야 한다
         self.enter = state.enter
         self.exit = state.exit
         self.pause = state.pause
