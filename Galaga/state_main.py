@@ -16,7 +16,7 @@ player = None
 
 
 # test
-test_enemy = None
+test_enemy = []
 
 front_stars_pos = 0
 # 별: x = 300, y = 400 ~ 1200
@@ -33,9 +33,10 @@ def enter():
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
-    test_enemy = Bee(100, 600)
+    test_enemy = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
+                  Bee(400, 600), Bee(500, 600)]
     gameworld.add_object(player, 1)
-    gameworld.add_object(test_enemy, 1)
+    gameworld.add_objects(test_enemy, 1)
 
 
 def exit():

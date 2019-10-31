@@ -13,8 +13,13 @@ class Enemy:
 
     def __init__(self, x, y):
         self.arrayed_x, self.arrayed_y = x, y
-        self.cur_x, self.cur_y = None, None
-        self.region = []
+        # self.cur_x, self.cur_y = None, None
+
+        self.region_left = 0
+        self.region_top = 0
+        self.region_right = 0
+        self.region_bottom = 0
+
         self.frame = 0
         if Enemy.dead_image == None:
             Enemy.dead_image = [load_image('Image/enemy_explosion0_39.png'),
@@ -38,12 +43,17 @@ class Bee(Enemy):
 
     def __init__(self, x, y):
         Enemy(x, y)
-        Enemy.cur_x, Enemy.cur_y = 100, 600
+        self.cur_x, self.cur_y = x, y
         self.frame = random.randint(0, 100)
         self.image = load_image('Image/bee_sprite_34x17.png')
 
     def update(self):
         self.frame = (self.frame + 1) % 200
+        self.region_left = self.cur_x - 25
+        self.region_top = self.cur_y + 25
+        self.region_right = self.cur_x + 25
+        self.region_bottom = self.cur_y - 20
+
 
     def draw(self):
         self.image.clip_draw(self.frame // 100 * 17, 0, 17, 17,
@@ -58,6 +68,3 @@ class Moth(Enemy):
     def __init__(self, x, y):
         Enemy.__init__(self, x, y)
         self.hp = 2
-
-
-

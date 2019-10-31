@@ -1,6 +1,7 @@
 from pico2d import *
 
 import gameworld
+from enemy import Enemy
 
 # Player의 상태를 바꾸는 외부/내부 이벤트
 RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, ATTACK_TIMER = range(8)
@@ -156,16 +157,25 @@ class Bullet:
 
     def __init__(self, x):
         self.x, self.y = x, PLAYER_POSITION_Y + 23
+        self.region_top = self.y + 5
         if Bullet.image == None:
             Bullet.image = load_image('Image/player_bullet_9.png')
 
     def update(self):
+        self.y += 2
+        self.region_top = self.y + 5
+
         if self.y > 800:
             gameworld.remove_object(self)
-        for enemy in gameworld.all_objects():
-            # if type(enemy) == 적이라면: 충돌체크
-            pass
-        self.y += 2
+        for obj in gameworld.all_objects():
+            if isinstance(obj, Enemy):
+                if obj.region_bottom < self.region_top:
+                    if obj.region_left < self.x and obj.region_right > self.x:
+                        gameworld.remove_object(self)
+                        gameworld.remove_object(obj)
+
+
+
 
     def draw(self):
         self.image.draw(self.x, self.y, 10, 10)
