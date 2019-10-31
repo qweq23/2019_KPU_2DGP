@@ -114,8 +114,7 @@ class Player:
         self.x, self.y = 300, PLAYER_POSITION_Y
         self.image = load_image('Image/player_17.png')
         self.dead_image = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
-                           load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png'),
-                           load_image('Image/explosion4_39.png')]
+                           load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
         self.life = 3
         self.velocity = 0
         self.dead_frame = 0
