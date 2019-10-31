@@ -1,7 +1,9 @@
 import framework
 from pico2d import *
 
-from Player import *
+import gameworld
+
+from Player import Player
 
 
 # 변수 선언
@@ -25,6 +27,8 @@ def enter():
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
 
+    gameworld.add_object(player, 1)
+
 
 def exit():
     global background_image
@@ -34,6 +38,8 @@ def exit():
     del background_image
     del background_front_stars1
     del background_front_stars2
+
+    gameworld.clear()
 
 def puase():
     pass
@@ -46,18 +52,19 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
-        elif event.type == SDL_KEYDOWN:
-            player.control(SDL_KEYDOWN, event.key)
-        elif event.type == SDL_KEYUP:
-            player.control(SDL_KEYUP, event.key)
+        else:
+            player.handle_event(event)
 
 
 def update():
     global front_stars_pos
     global background_front_frame
-    player.update_position()
+
     front_stars_pos = (front_stars_pos + 1) % 800
     background_front_frame = (background_front_frame + 1) % 200
+
+    for gameobj in gameworld.all_objects():
+        gameobj.update()
 
 
 
@@ -75,6 +82,8 @@ def draw():
     else:
         background_front_stars2.clip_draw(0, front_stars_pos, 600, 800, 300, 400)
 
-    player.draw()
+    for gameobj in gameworld.all_objects():
+        gameobj.draw()
+
     update_canvas()
 
