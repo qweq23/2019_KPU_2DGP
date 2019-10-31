@@ -19,7 +19,9 @@ class Enemy:
         self.region_top = 0
         self.region_right = 0
         self.region_bottom = 0
-
+        self.dying = False
+        self.dying_frame = 0
+        self.timer = 0
         self.frame = 0
         if Enemy.dead_image == None:
             Enemy.dead_image = [load_image('Image/enemy_explosion0_39.png'),
@@ -40,12 +42,18 @@ class Enemy:
 
 
 class Bee(Enemy):
+    image = None
 
     def __init__(self, x, y):
         Enemy(x, y)
         self.cur_x, self.cur_y = x, y
+        self.dying = False
+        self.dying_frame = 0
         self.frame = random.randint(0, 100)
-        self.image = load_image('Image/bee_sprite_34x17.png')
+        if Bee.image == None:
+            Bee.image = load_image('Image/bee_sprite_34x17.png')
+
+
 
     def update(self):
         self.frame = (self.frame + 1) % 200
@@ -53,11 +61,18 @@ class Bee(Enemy):
         self.region_top = self.cur_y + 25
         self.region_right = self.cur_x + 25
         self.region_bottom = self.cur_y - 20
-
+        if self.dying == True:
+            self.dying_frame = self.dying_frame + 1
+            if self.dying_frame == 250:
+                gameworld.remove_object(self)
 
     def draw(self):
-        self.image.clip_draw(self.frame // 100 * 17, 0, 17, 17,
-                             self.cur_x, self.cur_y, 50, 50)
+        if self.dying == False:
+            Bee.image.clip_draw(self.frame // 100 * 17, 0, 17, 17,
+                                 self.cur_x, self.cur_y, 50, 50)
+        else:
+            Enemy.dead_image[self.dying_frame // 50].draw(self.cur_x, self.cur_y, 50, 50)
+
 
 
 class Butterfly(Enemy):

@@ -172,7 +172,7 @@ class Bullet:
                 if obj.region_bottom < self.region_top:
                     if obj.region_left < self.x and obj.region_right > self.x:
                         gameworld.remove_object(self)
-                        gameworld.remove_object(obj)
+                        obj.dying = True
 
 
 
