@@ -112,6 +112,7 @@ PLAYER_SPEED = 1
 class Player:
     def __init__(self):
         self.x, self.y = 300, PLAYER_POSITION_Y
+        self.region = []
         self.image = load_image('Image/player_17.png')
         self.dead_image = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
                            load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]

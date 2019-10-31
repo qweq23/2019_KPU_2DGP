@@ -3,8 +3,8 @@ from pico2d import *
 
 import gameworld
 
-from Player import Player
-
+from player import Player
+from enemy import Bee
 
 # 변수 선언
 background_image = None
@@ -12,6 +12,11 @@ background_front_stars1 = None
 background_front_stars2 = None
 background_front_frame = 0
 player = None
+
+
+
+# test
+test_enemy = None
 
 front_stars_pos = 0
 # 별: x = 300, y = 400 ~ 1200
@@ -22,12 +27,15 @@ def enter():
     global background_front_stars2
     global player
 
+    global test_enemy
+
     background_image = load_image('Image/background_basic.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
-
+    test_enemy = Bee(100, 600)
     gameworld.add_object(player, 1)
+    gameworld.add_object(test_enemy, 1)
 
 
 def exit():
