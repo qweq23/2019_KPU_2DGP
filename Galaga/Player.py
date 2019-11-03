@@ -3,8 +3,7 @@ from pico2d import *
 import gameworld
 from enemy import Enemy
 
-# Player의 상태를 바꾸는 외부/내부 이벤트
-RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, ATTACK_TIMER = range(8)
+RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -26,28 +25,11 @@ class IdleState:
             player.velocity -= 1
         elif event == LEFT_UP:
             player.velocity += 1
+        elif event == SPACE_DOWN and player.attack_delay_time == 0:
+            gameworld.add_object(Bullet(player.x), 1)
+            player.attack_delay_time = 100
 
 
-    @staticmethod
-    def exit(player, event):
-        pass
-
-    @staticmethod
-    def do(player):
-        player.x += player.velocity
-        player.x = clamp(25, player.x, 600 - 25)
-
-    @staticmethod
-    def draw(player):
-        player.image.draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
-
-
-class AttackState:
-    @staticmethod
-    def enter(player, event):
-        gameworld.add_object(Bullet(player.x), 1)
-        # 전 상태가 IdleState 일 때만 타이머를 추가하고 싶다
-        player.timer = 10
 
     @staticmethod
     def exit(player, event):
@@ -55,22 +37,38 @@ class AttackState:
 
     @staticmethod
     def do(player):
-        player.timer -= 1
-        if player.timer == 0:
-            player.add_event(ATTACK_TIMER)
-
+        if player.attack_delay_time > 0:
+            player.attack_delay_time -= 1
         player.x += player.velocity
         player.x = clamp(25, player.x, 600 - 25)
-
 
     @staticmethod
     def draw(player):
         player.image.draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
+
 
 class DeadState:
     @staticmethod
     def enter(player, event):
-        player.timer = 0
+        pass
+
+    @staticmethod
+    def exit(player, event):
+        pass
+
+    @staticmethod
+    def do(player):
+        pass
+
+    @staticmethod
+    def draw(player):
+        pass
+
+
+class ReadyState:
+    @staticmethod
+    def enter(player, event):
+        pass
 
     @staticmethod
     def exit(player, event):
@@ -88,14 +86,8 @@ class DeadState:
 next_state_table = {
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
                 RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
-                SPACE_DOWN: AttackState, SPACE_UP: IdleState,
+                SPACE_DOWN: IdleState, SPACE_UP: IdleState,
                 DEAD_TIMER: DeadState},
-
-
-    AttackState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
-                  RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
-                  SPACE_DOWN: IdleState, SPACE_UP: IdleState,
-                  DEAD_TIMER: DeadState, ATTACK_TIMER: IdleState},
 
 
     DeadState: {RIGHT_UP: DeadState, LEFT_UP: DeadState,
@@ -113,19 +105,25 @@ PLAYER_SPEED = 1
 class Player:
     def __init__(self):
         self.x, self.y = 300, PLAYER_POSITION_Y
-        self.region = []
+
         self.image = load_image('Image/player_17.png')
         self.dead_image = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
                            load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
         self.life = 3
         self.velocity = 0
         self.dead_frame = 0
-        self.timer = 0
+        self.attack_delay_time = 0
 
         self.event_que = []
 
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
+
+
+    def get_bb(self):
+        length_from_center = PLAYER_SIZE / 2
+        return self.x - length_from_center, self.y - length_from_center, \
+            self.x + length_from_center, self.y + length_from_center
 
     def update_state(self):
         # 이벤트 큐에 뭐가 있으면
@@ -170,7 +168,7 @@ class Bullet:
         for obj in gameworld.all_objects():
             if isinstance(obj, Enemy):
                 if obj.region_bottom < self.region_top:
-                    if obj.region_left < self.x and obj.region_right > self.x:
+                    if obj.region_left < self.x < obj.region_right:
                         gameworld.remove_object(self)
                         obj.dying = True
 
@@ -178,4 +176,4 @@ class Bullet:
 
 
     def draw(self):
-        self.image.draw(self.x, self.y, 10, 10)
+        self.image.draw(self.x, self.y, 20, 20)

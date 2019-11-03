@@ -29,7 +29,7 @@ def enter():
 
     global test_enemy
 
-    background_image = load_image('Image/background_basic.png')
+    background_image = load_image('Image/background_ingame_800.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
@@ -96,3 +96,6 @@ def draw():
 
     update_canvas()
 
+
+def collide():
+    pass

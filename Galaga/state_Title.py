@@ -20,7 +20,7 @@ def enter():
     global background_front_stars2
     global title_image
     global press_enter_to_start
-    background_image = load_image('Image/title_background.png')
+    background_image = load_image('Image/title_background_800.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     title_image = [load_image('Image/title_Galaga0.png'), load_image('Image/title_Galaga1.png'),
