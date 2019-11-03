@@ -1,7 +1,7 @@
 import framework
 from pico2d import *
 
-import state_main
+import state_Main
 
 name = "TitleState"
 background_image = None
@@ -49,7 +49,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             framework.running = False
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_RETURN):
-            framework.change_state(state_main)
+            framework.change_state(state_Main)
 
 
 def update():

@@ -1,7 +1,7 @@
 import framework
 from pico2d import *
 
-import state_title
+import state_Title
 
 
 name = "StartState"
@@ -35,7 +35,7 @@ def update():
     global logo_time
     if logo_time > 1.0:
         logo_time = 0
-        framework.change_state(state_title)
+        framework.change_state(state_Title)
     delay(0.01)
     logo_time += 0.01
 
