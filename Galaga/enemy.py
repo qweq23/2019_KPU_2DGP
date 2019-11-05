@@ -1,25 +1,23 @@
 from pico2d import *
 import random
 
+import framework
 import gameworld
 
-# 적들의 4가지 상태
-# 1. 등장 2. 정렬 3. 퇴장 4. 죽음
-# 적들은 한 스테이지에서 일정 시간에 일정한 위치에 있어야 한다.
-# 적이 생성될 때 어느 위치에 정렬될 지 그 좌표값을 가지고 있어야 한다.
 
+ACTION_PER_TIME = 2.0
+FRAMES_PER_ACTION = 2
 
-# 적 클래스: 적들의 죽는 스프라이트를 저장한다. 정렬될 위치를 초기화한다.
+TIME_PER_DYING_ACTION = 0.5
+DYING_ACTION_PER_TIME = 1.0 / TIME_PER_DYING_ACTION
+FRAMES_PER_DYING_ACTION = 5
+
 class Enemy:
     dead_image = None
 
     def __init__(self, x, y):
         self.arrayed_x, self.arrayed_y = x, y
 
-        self.dying = False
-        self.dying_frame = 0
-        self.timer = 0
-        self.frame = 0
         if Enemy.dead_image is None:
             Enemy.dead_image = [load_image('Image/enemy_explosion0_39.png'),
                                 load_image('Image/enemy_explosion1_39.png'),
@@ -41,30 +39,39 @@ class Bee(Enemy):
         Enemy(x, y)
         self.cur_x, self.cur_y = x, y
         self.dying = False
+        self.dying_timer = 0
         self.dying_frame = 0
-        self.frame = random.randint(0, 100)
+        self.idle_frame = random.randint(0, 1 + 1)
         if Bee.image is None:
             Bee.image = load_image('Image/bee_sprite_34x17.png')
 
     def get_bb(self):
         return self.cur_x - 20, self.cur_y - 20, self.cur_x + 20, self.cur_y + 20
 
-    def update(self):
-        self.frame = (self.frame + 1) % 200
+    def die(self):
+        self.dying = True
+        self.dying_timer = TIME_PER_DYING_ACTION
 
-        if self.dying is True:
-            self.dying_frame = self.dying_frame + 1
-            if self.dying_frame == 250:
+    def update(self):
+        if self.dying is False:
+            self.idle_frame = (self.idle_frame + FRAMES_PER_ACTION * ACTION_PER_TIME * framework.frame_time) % 2
+
+        else:
+            self.dying_timer -= framework.frame_time
+            if self.dying_timer < 0:
                 gameworld.remove_object(self)
+
+            self.dying_frame = (self.dying_frame + FRAMES_PER_DYING_ACTION * DYING_ACTION_PER_TIME
+                                * framework.frame_time) % 5
 
     def draw(self):
         if self.dying is False:
-            Bee.image.clip_draw(self.frame // 100 * 17, 0, 17, 17,
-                                 self.cur_x, self.cur_y, 50, 50)
-            draw_rectangle(*self.get_bb())
+            Bee.image.clip_draw(int(self.idle_frame) * 17, 0, 17, 17,
+                                self.cur_x, self.cur_y, 50, 50)
+            # draw_rectangle(*self.get_bb())
 
         else:
-            Enemy.dead_image[self.dying_frame // 50].draw(self.cur_x, self.cur_y, 50, 50)
+            Enemy.dead_image[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
 
 
 class Butterfly(Enemy):
@@ -83,9 +90,3 @@ class Moth(Enemy):
         Enemy.__init__(self, x, y)
         if Moth.image is None:
             Moth.image = load_image('Image/moth_sprite_34.png')
-
-
-        self.hp = 2
-
-
-
