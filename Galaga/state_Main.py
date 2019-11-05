@@ -90,8 +90,11 @@ def update():
 
         for bullet in player_bullets:
             if collide(bullet, enemy):
+                print("COLLISION")
                 gameworld.remove_object(bullet)
                 enemy.dying = True
+                enemies.remove(enemy)
+                player_bullets.remove(bullet)
 
 
 
