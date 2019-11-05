@@ -1,7 +1,8 @@
 from pico2d import *
 
+import framework
 import gameworld
-from enemy import Enemy
+from bullet_player import Bullet
 
 RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
 
@@ -18,28 +19,25 @@ class IdleState:
     @staticmethod
     def enter(player, event):
         if event == RIGHT_DOWN:
-            player.velocity += 1
+            player.velocity += PLAYER_SPEED_PPS
         elif event == LEFT_DOWN:
-            player.velocity -= 1
+            player.velocity -= PLAYER_SPEED_PPS
         elif event == RIGHT_UP:
-            player.velocity -= 1
+            player.velocity -= PLAYER_SPEED_PPS
         elif event == LEFT_UP:
-            player.velocity += 1
-        elif event == SPACE_DOWN and player.attack_delay_time == 0:
-            gameworld.add_object(Bullet(player.x), 1)
-            player.attack_delay_time = 100
+            player.velocity += PLAYER_SPEED_PPS
+
+
 
 
 
     @staticmethod
     def exit(player, event):
-        pass
-
+        if event == SPACE_DOWN:
+            gameworld.add_object(Bullet(player.x), 1)
     @staticmethod
     def do(player):
-        if player.attack_delay_time > 0:
-            player.attack_delay_time -= 1
-        player.x += player.velocity
+        player.x += player.velocity * framework.frame_time
         player.x = clamp(25, player.x, 600 - 25)
 
     @staticmethod
@@ -97,14 +95,13 @@ next_state_table = {
 }
 
 
-PLAYER_POSITION_Y = 50
 PLAYER_SIZE = 50
-PLAYER_SPEED = 1
+PLAYER_SPEED_PPS = 250
 
 
 class Player:
     def __init__(self):
-        self.x, self.y = 300, PLAYER_POSITION_Y
+        self.x, self.y = 300, 50
 
         self.image = load_image('Image/player_17.png')
         self.dead_image = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
@@ -112,13 +109,11 @@ class Player:
         self.life = 3
         self.velocity = 0
         self.dead_frame = 0
-        self.attack_delay_time = 0
 
         self.event_que = []
 
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
-
 
     def get_bb(self):
         length_from_center = PLAYER_SIZE / 2
@@ -150,30 +145,3 @@ class Player:
 
 
 
-class Bullet:
-    image = None
-
-    def __init__(self, x):
-        self.x, self.y = x, PLAYER_POSITION_Y + 23
-        self.region_top = self.y + 5
-        if Bullet.image == None:
-            Bullet.image = load_image('Image/player_bullet_9.png')
-
-    def update(self):
-        self.y += 2
-        self.region_top = self.y + 5
-
-        if self.y > 800:
-            gameworld.remove_object(self)
-        for obj in gameworld.all_objects():
-            if isinstance(obj, Enemy):
-                if obj.region_bottom < self.region_top:
-                    if obj.region_left < self.x < obj.region_right:
-                        gameworld.remove_object(self)
-                        obj.dying = True
-
-
-
-
-    def draw(self):
-        self.image.draw(self.x, self.y, 20, 20)

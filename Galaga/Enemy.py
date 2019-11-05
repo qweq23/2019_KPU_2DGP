@@ -16,10 +16,6 @@ class Enemy:
     def __init__(self, x, y):
         self.arrayed_x, self.arrayed_y = x, y
 
-        self.region_left = 0
-        self.region_top = 0
-        self.region_right = 0
-        self.region_bottom = 0
         self.dying = False
         self.dying_frame = 0
         self.timer = 0
@@ -30,9 +26,6 @@ class Enemy:
                                 load_image('Image/enemy_explosion2_39.png'),
                                 load_image('Image/enemy_explosion3_39.png'),
                                 load_image('Image/enemy_explosion4_39.png')]
-
-    def get_bb(self):
-        return
 
     def update(self):
         pass
@@ -53,14 +46,13 @@ class Bee(Enemy):
         if Bee.image is None:
             Bee.image = load_image('Image/bee_sprite_34x17.png')
 
+    def get_bb(self):
+        return self.cur_x - 20, self.cur_y - 20, self.cur_x + 20, self.cur_y + 20
 
 
     def update(self):
         self.frame = (self.frame + 1) % 200
-        self.region_left = self.cur_x - 25
-        self.region_top = self.cur_y + 25
-        self.region_right = self.cur_x + 25
-        self.region_bottom = self.cur_y - 20
+
         if self.dying is True:
             self.dying_frame = self.dying_frame + 1
             if self.dying_frame == 250:
@@ -70,6 +62,8 @@ class Bee(Enemy):
         if self.dying is False:
             Bee.image.clip_draw(self.frame // 100 * 17, 0, 17, 17,
                                  self.cur_x, self.cur_y, 50, 50)
+            draw_rectangle(*self.get_bb())
+
         else:
             Enemy.dead_image[self.dying_frame // 50].draw(self.cur_x, self.cur_y, 50, 50)
 

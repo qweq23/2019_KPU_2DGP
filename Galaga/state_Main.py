@@ -14,9 +14,7 @@ background_front_frame = 0
 player = None
 
 
-
-# test
-test_enemy = []
+enemies = []
 
 front_stars_pos = 0
 # 별: x = 300, y = 400 ~ 1200
@@ -27,16 +25,17 @@ def enter():
     global background_front_stars2
     global player
 
-    global test_enemy
+    global enemies
 
     background_image = load_image('Image/background_ingame_800.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
     player = Player()
-    test_enemy = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
-                  Bee(400, 600), Bee(500, 600)]
+    enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
+               Bee(400, 600), Bee(500, 600)]
+
     gameworld.add_object(player, 1)
-    gameworld.add_objects(test_enemy, 1)
+    gameworld.add_objects(enemies, 1)
 
 
 def exit():
@@ -75,6 +74,11 @@ def update():
     for gameobj in gameworld.all_objects():
         gameobj.update()
 
+    for enemy in enemies:
+        if collide(player, enemy):
+            print("COLLISION")
+            # 적은 사라지고 나는 터짐
+
 
 
 def draw():
@@ -97,5 +101,12 @@ def draw():
     update_canvas()
 
 
-def collide():
-    pass
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+    return True
