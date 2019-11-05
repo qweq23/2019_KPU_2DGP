@@ -1,4 +1,5 @@
 import time
+from pico2d import load_font
 
 # 클래스
 class GameState:
@@ -44,6 +45,7 @@ CLIENT_WIDTH, CLIENT_HEIGHT = 800, 800
 running = None
 stack = None
 frame_time = 0.0
+font = None
 
 # 상태 변환
 def change_state(state):
@@ -85,10 +87,12 @@ def quit():
 
 
 def run(start_state):
-    global running, stack, frame_time
+    global running, stack, frame_time, font
     running = True
     stack = [start_state]
     start_state.enter()
+
+    font = load_font('Font/ENCR10B.TTF', 24)
 
     current_time = time.time()
     while (running):

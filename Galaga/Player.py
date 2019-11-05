@@ -4,7 +4,7 @@ import framework
 import gameworld
 from bullet_player import Bullet
 
-RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
+RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, READY_TIMER = range(8)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -27,14 +27,11 @@ class IdleState:
         elif event == LEFT_UP:
             player.velocity += PLAYER_SPEED_PPS
 
-
-
-
-
     @staticmethod
     def exit(player, event):
         if event == SPACE_DOWN:
             gameworld.add_object(Bullet(player.x), 1)
+
     @staticmethod
     def do(player):
         player.x += player.velocity * framework.frame_time
@@ -64,9 +61,11 @@ class DeadState:
 
 
 class ReadyState:
+    # 죽는 스프라이트가 끝난 후, 화면 중앙에 Ready 버튼이 생기는 상태
+
     @staticmethod
     def enter(player, event):
-        pass
+        player.ready_time = 2
 
     @staticmethod
     def exit(player, event):
@@ -74,11 +73,13 @@ class ReadyState:
 
     @staticmethod
     def do(player):
-        pass
+        player.ready_time -= framework.frame_time
+        if player.ready_time < 0:
+            player.add_event(READY_TIMER)
 
     @staticmethod
     def draw(player):
-        pass
+        framework.font.draw(300, 400, 'Ready', (251, 100, 0))
 
 
 next_state_table = {
@@ -87,11 +88,15 @@ next_state_table = {
                 SPACE_DOWN: IdleState, SPACE_UP: IdleState,
                 DEAD_TIMER: DeadState},
 
-
     DeadState: {RIGHT_UP: DeadState, LEFT_UP: DeadState,
                 RIGHT_DOWN: DeadState, LEFT_DOWN: DeadState,
                 SPACE_DOWN: DeadState, SPACE_UP: DeadState,
-                DEAD_TIMER: IdleState}
+                DEAD_TIMER: IdleState, READY_TIMER: ReadyState},
+
+    ReadyState: {RIGHT_UP: ReadyState, LEFT_UP: ReadyState,
+                 RIGHT_DOWN: ReadyState, LEFT_DOWN: ReadyState,
+                 SPACE_DOWN: ReadyState, SPACE_UP: ReadyState,
+                 READY_TIMER: IdleState}
 }
 
 
@@ -108,10 +113,11 @@ class Player:
                            load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
         self.life = 3
         self.velocity = 0
-        self.dead_frame = 0
+
+        self.ready_time = 0
+        self.death_time = 0
 
         self.event_que = []
-
         self.cur_state = IdleState
         self.cur_state.enter(self, None)
 
