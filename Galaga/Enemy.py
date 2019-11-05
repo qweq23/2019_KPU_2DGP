@@ -49,7 +49,6 @@ class Bee(Enemy):
     def get_bb(self):
         return self.cur_x - 20, self.cur_y - 20, self.cur_x + 20, self.cur_y + 20
 
-
     def update(self):
         self.frame = (self.frame + 1) % 200
 
@@ -66,7 +65,6 @@ class Bee(Enemy):
 
         else:
             Enemy.dead_image[self.dying_frame // 50].draw(self.cur_x, self.cur_y, 50, 50)
-
 
 
 class Butterfly(Enemy):

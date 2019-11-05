@@ -5,6 +5,9 @@ import gameworld
 
 from player import Player
 from enemy import Bee
+from enemy import Butterfly
+from enemy import Moth
+from bullet_player import PlayerBullet
 
 # 변수 선언
 background_image = None
@@ -71,13 +74,24 @@ def update():
     front_stars_pos = (front_stars_pos + 1) % 800
     background_front_frame = (background_front_frame + 1) % 200
 
+    player_bullets = []
+    enemy_bullets = []
+
     for gameobj in gameworld.all_objects():
         gameobj.update()
+        if isinstance(gameobj, PlayerBullet):
+            player_bullets.append(gameobj)
 
+    # 플레이어:적, 플레이어: 총알, 적:총알
     for enemy in enemies:
         if collide(player, enemy):
             print("COLLISION")
             # 적은 사라지고 나는 터짐
+
+        for bullet in player_bullets:
+            if collide(bullet, enemy):
+                gameworld.remove_object(bullet)
+                enemy.dying = True
 
 
 

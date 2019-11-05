@@ -2,7 +2,7 @@ from pico2d import *
 
 import framework
 import gameworld
-from bullet_player import Bullet
+from bullet_player import PlayerBullet
 
 RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, READY_TIMER = range(8)
 
@@ -30,7 +30,7 @@ class IdleState:
     @staticmethod
     def exit(player, event):
         if event == SPACE_DOWN:
-            gameworld.add_object(Bullet(player.x), 1)
+            gameworld.add_object(PlayerBullet(player.x), 1)
 
     @staticmethod
     def do(player):

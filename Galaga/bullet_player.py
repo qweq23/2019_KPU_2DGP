@@ -4,13 +4,14 @@ import framework
 
 BULLET_SPEED_PPS = 700
 
-class Bullet:
+
+class PlayerBullet:
     image = None
 
     def __init__(self, x):
         self.x, self.y = x, 72
-        if Bullet.image is None:
-            Bullet.image = load_image('Image/player_bullet_9.png')
+        if PlayerBullet.image is None:
+            PlayerBullet.image = load_image('Image/player_bullet_9.png')
 
     def get_bb(self):
         return self.x - 5, self.y - 10, self.x + 5, self.y + 10
