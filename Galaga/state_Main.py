@@ -3,7 +3,7 @@ from pico2d import *
 
 import gameworld
 
-from player import Player
+from starship import StarShip
 from enemy import Bee
 from enemy import Butterfly
 from enemy import Moth
@@ -33,7 +33,7 @@ def enter():
     background_image = load_image('Image/background_ingame_800.png')
     background_front_stars1 = load_image('Image/background_front1.png')
     background_front_stars2 = load_image('Image/background_front2.png')
-    player = Player()
+    player = StarShip()
     enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
                Bee(400, 600), Bee(500, 600)]
 

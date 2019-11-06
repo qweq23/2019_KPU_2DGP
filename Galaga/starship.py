@@ -104,7 +104,7 @@ PLAYER_SIZE = 50
 PLAYER_SPEED_PPS = 250
 
 
-class Player:
+class StarShip:
     def __init__(self):
         self.x, self.y = 300, 50
 
