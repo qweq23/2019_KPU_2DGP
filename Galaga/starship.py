@@ -1,10 +1,11 @@
 from pico2d import *
+import time
 
 import framework
 import gameworld
 from bullet_player import PlayerBullet
 
-RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, READY_TIMER = range(8)
+RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, READY_TIMER, RESPAWN_TIMER = range(9)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -14,6 +15,34 @@ key_event_table = {
     (SDL_KEYUP, SDLK_LEFT): LEFT_UP,
     (SDL_KEYUP, SDLK_SPACE): SPACE_UP,
 }
+
+PLAYER_SIZE = 50
+PLAYER_SPEED_PPS = 250
+
+TIME_PER_DYING_ACTION = 0.8
+DYING_ACTION_PER_TIME = 1.0 / TIME_PER_DYING_ACTION
+FRAMES_PER_DYING_ACTION = 4
+
+class ReadyState:
+    @staticmethod
+    def enter(player, event):
+        if event == READY_TIMER:
+            player.ready_time = 3
+
+    @staticmethod
+    def exit(player, event):
+        pass
+
+    @staticmethod
+    def do(player):
+        player.ready_time -= framework.frame_time
+        if player.ready_time < 0:
+            player.add_event(READY_TIMER)
+
+    @staticmethod
+    def draw(player):
+        framework.font.draw(300, 400, 'Ready', (251, 100, 0))
+
 
 class IdleState:
     @staticmethod
@@ -36,36 +65,42 @@ class IdleState:
     def do(player):
         player.x += player.velocity * framework.frame_time
         player.x = clamp(25, player.x, 600 - 25)
+        # player.add_event(DEAD_TIMER)
 
     @staticmethod
     def draw(player):
-        player.image.draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
+        player.starship_image.draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
 
 
 class DeadState:
     @staticmethod
     def enter(player, event):
-        pass
+        if event == DEAD_TIMER:
+            player.life -= 1
+            player.death_time = TIME_PER_DYING_ACTION
 
     @staticmethod
     def exit(player, event):
-        pass
+        player.dying_frame = 0
 
     @staticmethod
     def do(player):
-        pass
+        player.dying_frame = (player.dying_frame + FRAMES_PER_DYING_ACTION * DYING_ACTION_PER_TIME
+                              * framework.frame_time) % 4
+        player.death_time -= framework.frame_time
+        if player.death_time < 0:
+            player.add_event(RESPAWN_TIMER)
+
 
     @staticmethod
     def draw(player):
-        pass
+        player.dying_images[int(player.dying_frame)].draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
 
-
-class ReadyState:
-    # 죽는 스프라이트가 끝난 후, 화면 중앙에 Ready 버튼이 생기는 상태
-
+class RespawnState:
     @staticmethod
     def enter(player, event):
-        player.ready_time = 2
+        if event == RESPAWN_TIMER:
+            player.respawn_time = 2.5
 
     @staticmethod
     def exit(player, event):
@@ -73,16 +108,22 @@ class ReadyState:
 
     @staticmethod
     def do(player):
-        player.ready_time -= framework.frame_time
-        if player.ready_time < 0:
+        player.respawn_time -= framework.frame_time
+        if player.respawn_time < 0:
             player.add_event(READY_TIMER)
 
     @staticmethod
     def draw(player):
-        framework.font.draw(300, 400, 'Ready', (251, 100, 0))
+        pass
 
 
 next_state_table = {
+
+    ReadyState: {RIGHT_UP: ReadyState, LEFT_UP: ReadyState,
+                 RIGHT_DOWN: ReadyState, LEFT_DOWN: ReadyState,
+                 SPACE_DOWN: ReadyState, SPACE_UP: ReadyState,
+                 READY_TIMER: IdleState},
+
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
                 RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
                 SPACE_DOWN: IdleState, SPACE_UP: IdleState,
@@ -91,35 +132,36 @@ next_state_table = {
     DeadState: {RIGHT_UP: DeadState, LEFT_UP: DeadState,
                 RIGHT_DOWN: DeadState, LEFT_DOWN: DeadState,
                 SPACE_DOWN: DeadState, SPACE_UP: DeadState,
-                DEAD_TIMER: IdleState, READY_TIMER: ReadyState},
+                RESPAWN_TIMER: RespawnState},
 
-    ReadyState: {RIGHT_UP: ReadyState, LEFT_UP: ReadyState,
-                 RIGHT_DOWN: ReadyState, LEFT_DOWN: ReadyState,
-                 SPACE_DOWN: ReadyState, SPACE_UP: ReadyState,
-                 READY_TIMER: IdleState}
+    RespawnState: {RIGHT_UP: RespawnState, LEFT_UP: RespawnState,
+                   RIGHT_DOWN: RespawnState, LEFT_DOWN: RespawnState,
+                   SPACE_DOWN: RespawnState, SPACE_UP: RespawnState,
+                   READY_TIMER: ReadyState}
 }
 
 
-PLAYER_SIZE = 50
-PLAYER_SPEED_PPS = 250
 
 
 class StarShip:
     def __init__(self):
         self.x, self.y = 300, 50
 
-        self.image = load_image('Image/player_17.png')
-        self.dead_image = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
-                           load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
+        self.starship_image = load_image('Image/player_17.png')
+        self.dying_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
+                             load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
         self.life = 3
         self.velocity = 0
 
         self.ready_time = 0
         self.death_time = 0
+        self.respawn_time = 0
+
+        self.dying_frame = 0
 
         self.event_que = []
-        self.cur_state = IdleState
-        self.cur_state.enter(self, None)
+        self.cur_state = ReadyState
+        self.cur_state.enter(self, READY_TIMER)
 
     def get_bb(self):
         length_from_center = PLAYER_SIZE / 2
