@@ -12,38 +12,25 @@ TIME_PER_DYING_ACTION = 0.5
 DYING_ACTION_PER_TIME = 1.0 / TIME_PER_DYING_ACTION
 FRAMES_PER_DYING_ACTION = 5
 
-class Enemy:
-    dead_image = None
 
-    def __init__(self, x, y):
-        self.arrayed_x, self.arrayed_y = x, y
-
-        if Enemy.dead_image is None:
-            Enemy.dead_image = [load_image('Image/enemy_explosion0_39.png'),
-                                load_image('Image/enemy_explosion1_39.png'),
-                                load_image('Image/enemy_explosion2_39.png'),
-                                load_image('Image/enemy_explosion3_39.png'),
-                                load_image('Image/enemy_explosion4_39.png')]
-
-    def update(self):
-        pass
-
-    def draw(self):
-        pass
-
-
-class Bee(Enemy):
+class Bee:
     image = None
 
     def __init__(self, x, y):
-        Enemy(x, y)
+        self.arrayed_x , arrayed_y = x, y
         self.cur_x, self.cur_y = x, y
         self.dying = False
         self.dying_timer = 0
         self.dying_frame = 0
-        self.idle_frame = random.randint(0, 1 + 1)
+        self.idle_frame = 1 / random.randint(1, 100)
         if Bee.image is None:
             Bee.image = load_image('Image/bee_sprite_34x17.png')
+
+        self.dead_image = [load_image('Image/enemy_explosion0_39.png'),
+                            load_image('Image/enemy_explosion1_39.png'),
+                            load_image('Image/enemy_explosion2_39.png'),
+                            load_image('Image/enemy_explosion3_39.png'),
+                            load_image('Image/enemy_explosion4_39.png')]
 
     def get_bb(self):
         return self.cur_x - 20, self.cur_y - 20, self.cur_x + 20, self.cur_y + 20
@@ -71,22 +58,24 @@ class Bee(Enemy):
             # draw_rectangle(*self.get_bb())
 
         else:
-            Enemy.dead_image[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
+            self.dead_image[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
 
 
-class Butterfly(Enemy):
+class Butterfly:
     image = None
 
     def __init__(self, x, y):
-        Enemy.__init__(self, x, y)
+        self.arrayed_x, arrayed_y = x, y
+        self.cur_x, cur_y = x, y
         if Butterfly.image is None:
             Butterfly.image = load_image('Image/butterfly_sprite_34x17.png')
 
 
-class Moth(Enemy):
+class Moth:
     image = None
 
     def __init__(self, x, y):
-        Enemy.__init__(self, x, y)
+        self.arrayed_x, arrayed_y = x, y
+        self.cur_x, cur_y = x, y
         if Moth.image is None:
             Moth.image = load_image('Image/moth_sprite_34.png')

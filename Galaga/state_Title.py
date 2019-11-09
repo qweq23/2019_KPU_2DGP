@@ -3,42 +3,32 @@ from pico2d import *
 
 import state_Main
 
+import gameworld
+
+from stars import BG_Stars
+from gamelogo import GameLogo
+from background_black import BackGround
+
 name = "TitleState"
-background_image = None
-background_front_stars1 = None
-background_front_stars2 = None
-background_front_frame = 0
-front_stars_pos = 0
-title_image = None
-title_frame = 0
-timer = 0
-press_enter_to_start = None
+
 
 def enter():
-    global background_image
-    global background_front_stars1
-    global background_front_stars2
-    global title_image
-    global press_enter_to_start
-    background_image = load_image('Image/title_background_800.png')
-    background_front_stars1 = load_image('Image/background_front1.png')
-    background_front_stars2 = load_image('Image/background_front2.png')
-    title_image = [load_image('Image/title_Galaga0.png'), load_image('Image/title_Galaga1.png'),
-                   load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga3.png'),
-                   load_image('Image/title_Galaga4.png'), load_image('Image/title_Galaga3.png'),
-                   load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga1.png')]
-    press_enter_to_start = load_image('Image/press_enter_to_start.png')
+    background = BackGround()
+    stars = BG_Stars(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
+    game_logo = GameLogo()
+
+    gameworld.add_objects([background, stars, game_logo], 0)
+
 
 def exit():
-    global background_image
-    global title_image
-
-    del background_image
-    del title_image
+    gameworld.clear()
+    pass
 
 
 def pause():
     pass
+
+
 def resume():
     pass
 
@@ -53,30 +43,15 @@ def handle_events():
 
 
 def update():
-    global title_frame
-    global front_stars_pos
-    global background_front_frame
+    for gameobj in gameworld.all_objects():
+        gameobj.update()
 
-    title_frame = (title_frame + 1) % 80
-    front_stars_pos = (front_stars_pos + 1) % 800
-    background_front_frame = (background_front_frame + 1) % 200
-    delay(0.001)
 
 def draw():
-    global background_image
-    global background_front_stars1
-    global background_front_stars2
-    global front_stars_pos
-    global title_image
-
     clear_canvas()
-    background_image.draw(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
 
-    if background_front_frame < 100:
-        background_front_stars1.clip_draw(0, front_stars_pos, 600, 800, 400, 400)
-    else:
-        background_front_stars2.clip_draw(0, front_stars_pos, 600, 800, 400, 400)
+    for gameobj in gameworld.all_objects():
+        gameobj.draw()
+    framework.font.draw(250, 200, 'Press enter to start', (251, 100, 0))
 
-    title_image[title_frame // 10].draw(framework.CLIENT_WIDTH / 2, 500)
-    press_enter_to_start.draw(framework.CLIENT_WIDTH / 2, 200)
     update_canvas()

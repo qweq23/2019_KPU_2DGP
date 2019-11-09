@@ -3,7 +3,6 @@ from pico2d import *
 
 import state_Title
 
-
 name = "StartState"
 image = None
 logo_time = 0.0
@@ -12,6 +11,8 @@ logo_time = 0.0
 def enter():
     global image
     image = load_image('Image/kpu_credit.png')
+
+
 def exit():
     global image
     del image
@@ -19,6 +20,8 @@ def exit():
 
 def pause():
     pass
+
+
 def resume():
     pass
 
@@ -30,14 +33,14 @@ def handle_events():
             framework.running = False
 
 
-
 def update():
     global logo_time
-    if logo_time > 1.0:
+    if logo_time > 1.5:
         logo_time = 0
         framework.change_state(state_Title)
-    delay(0.01)
-    logo_time += 0.01
+
+    logo_time += framework.frame_time
+
 
 def draw():
     global image

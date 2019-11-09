@@ -1,6 +1,7 @@
 # layer 0: Background Objects
 # layer 1: Foreground Objects
-objects = [[], []]
+# layer 2: UI
+objects = [[], [], []]
 
 
 def add_object(o, layer):
@@ -22,6 +23,10 @@ def remove_object(o):
 def clear():
     for o in all_objects():
         del o
+
+
+def destroy():
+    clear()
     objects.clear()
 
 

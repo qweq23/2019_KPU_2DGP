@@ -92,7 +92,7 @@ def run(start_state):
     stack = [start_state]
     start_state.enter()
 
-    font = load_font('Font/ENCR10B.TTF', 24)
+    font = load_font('Font/LCD_Solid.ttf', 24)
 
     current_time = time.time()
     while (running):

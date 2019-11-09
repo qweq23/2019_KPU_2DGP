@@ -41,7 +41,7 @@ class ReadyState:
 
     @staticmethod
     def draw(player):
-        framework.font.draw(300, 400, 'Ready', (251, 100, 0))
+        framework.font.draw(280, 400, 'Ready', (251, 100, 0))
 
 
 class IdleState:
