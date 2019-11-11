@@ -1,7 +1,7 @@
 import time
 from pico2d import load_font
 
-# 클래스
+
 class GameState:
     def __init__(self, state):
         self.enter = state.enter

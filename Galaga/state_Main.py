@@ -15,6 +15,7 @@ from bullet_player import PlayerBullet
 name = "MainState"
 
 # 변수 선언
+
 player = None
 
 

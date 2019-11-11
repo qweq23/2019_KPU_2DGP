@@ -26,7 +26,8 @@ class Bee:
         if Bee.image is None:
             Bee.image = load_image('Image/bee_sprite_34x17.png')
 
-        self.dead_image = [load_image('Image/enemy_explosion0_39.png'),
+        # 죽는 이미지 함수로 바꾸던가 해라
+        self.dead_images = [load_image('Image/enemy_explosion0_39.png'),
                             load_image('Image/enemy_explosion1_39.png'),
                             load_image('Image/enemy_explosion2_39.png'),
                             load_image('Image/enemy_explosion3_39.png'),
@@ -58,7 +59,7 @@ class Bee:
             # draw_rectangle(*self.get_bb())
 
         else:
-            self.dead_image[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
+            self.dead_images[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
 
 
 class Butterfly:
