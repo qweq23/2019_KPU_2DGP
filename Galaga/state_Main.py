@@ -2,6 +2,7 @@ import framework
 from pico2d import *
 
 import gameworld
+import state_Pause
 
 from background_black import BackGround
 from stars import BG_Stars
@@ -23,8 +24,6 @@ enemies = []
 player_bullets = []
 enemy_bullets = []
 
-front_stars_pos = 0
-# 별: x = 300, y = 400 ~ 1200
 
 
 def enter():
@@ -47,6 +46,8 @@ def exit():
 
 
 def pause():
+    # 플레이어가 움직이고 있었다면 뭔가 조취를 취해야 한다
+    player.velocity = 0
     pass
 
 
@@ -59,15 +60,15 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
+        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_p):
+            framework.push_state(state_Pause)
         else:
             player.handle_event(event)
 
 
 def update():
-    global front_stars_pos
     global player_bullets, enemy_bullets
 
-    front_stars_pos = (front_stars_pos + 1) % 800
 
     for gameobj in gameworld.all_objects():
         gameobj.update()
