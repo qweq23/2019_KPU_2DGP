@@ -163,6 +163,8 @@ class StarShip:
         self.cur_state = ReadyState
         self.cur_state.enter(self, READY_TIMER)
 
+        gameworld.add_object(self, 1)
+
     def get_bb(self):
         length_from_center = PLAYER_SIZE / 2
         return self.x - length_from_center, self.y - length_from_center, \

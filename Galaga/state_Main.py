@@ -1,44 +1,41 @@
-import framework
 from pico2d import *
-
+import framework
 import gameworld
-import state_Pause
+
+
+# state_Main에서 할 일
+# 1. 게임 월드의 객체를 업데이트하고, 그린다
+# 2. 백그라운드 객체를 인스턴스한다. -> 백그라운드 객체, 스테이지에서 인스턴스해도 되지 않음?
+# 3. 스테이지를 인스턴스한다.
+# 4. UI를 인스턴스한다.
+
+#   스테이지는 자신의 시간을 가지고, 스테이지 시간이 끝나면 다음 스테이지로 넘어간다.
+#   충돌 처리는 스테이지 안에서, 포그라운드 객체의 인스턴스도 스테이지 안에서 이루어진다.
+
+# 인스턴스 된 객체는 반드시 게임월드에 들어가는가?
+# 메인 스테이트에서 백그라운드, 스테이지, UI를 조정할 일이 있을까?
+# 스테이지랑 UI는 조정할 일이 있겠지만 백그라운드는 없을 것 같다, 게임월드에만 넣어주면 될 듯
 
 from background_black import BackGround
 from stars import BG_Stars
+from UI_manager import UI_Manager
+from stage import Stage
 
-from starship import StarShip
-from enemy import Bee
-from enemy import Butterfly
-from enemy import Moth
-from bullet_player import PlayerBullet
 
 name = "MainState"
-
-# 변수 선언
-
-player = None
-
-
-enemies = []
-player_bullets = []
-enemy_bullets = []
-
-
+ui = None
+stage = None
 
 def enter():
-    global player
-    global enemies
-
     background = BackGround()
     stars = BG_Stars(300, framework.CLIENT_HEIGHT / 2)
-    player = StarShip()
-    enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
-               Bee(400, 600), Bee(500, 600)]
 
-    gameworld.add_objects([background, stars], 0)
-    gameworld.add_object(player, 1)
-    gameworld.add_objects(enemies, 1)
+    global stage
+    stage = Stage()
+
+    global ui
+    ui = UI_Manager()
+
 
 
 def exit():
@@ -46,8 +43,6 @@ def exit():
 
 
 def pause():
-    # 플레이어가 움직이고 있었다면 뭔가 조취를 취해야 한다
-    player.velocity = 0
     pass
 
 
@@ -60,35 +55,14 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
-        elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_p):
-            framework.push_state(state_Pause)
         else:
-            player.handle_event(event)
+            stage.handle_event(event)
 
 
 def update():
-    global player_bullets, enemy_bullets
-
-
     for gameobj in gameworld.all_objects():
         gameobj.update()
-        if isinstance(gameobj, PlayerBullet):
-            player_bullets.append(gameobj)
 
-    # 플레이어:적, 플레이어: 총알, 적:총알
-    for enemy in enemies:
-        if collide(player, enemy):
-            print("COLLISION")
-            # 적은 사라지고 나는 터짐
-
-        for bullet in player_bullets:
-            if collide(bullet, enemy):
-                print("COLLISION")
-                gameworld.remove_object(bullet)
-                enemy.die()
-                enemies.remove(enemy)
-                player_bullets.remove(bullet)
-                break
 
 
 def draw():

@@ -33,6 +33,8 @@ class Bee:
                             load_image('Image/enemy_explosion3_39.png'),
                             load_image('Image/enemy_explosion4_39.png')]
 
+        gameworld.add_object(self, 1)
+
     def get_bb(self):
         return self.cur_x - 20, self.cur_y - 20, self.cur_x + 20, self.cur_y + 20
 

@@ -1,6 +1,7 @@
 from pico2d import *
 
 import framework
+import gameworld
 
 # 움직임 없음
 
@@ -17,6 +18,7 @@ class BG_Stars:
         self.front_stars_image = [load_image('Image/background_front1.png'),
                                   load_image('Image/background_front2.png')]
         self.front_stars_frame = 0
+        gameworld.add_object(self, 0)
 
     def update(self):
         self.front_stars_frame = \
