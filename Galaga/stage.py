@@ -6,6 +6,7 @@ import gameworld
 from starship import StarShip
 from enemy import *
 
+# 화면 중앙에 ready 뜨는 것도 스테이지에서 해야할 일 같다...
 
 # stage_number: enemies_list
 stage_enemies_table = {
@@ -14,12 +15,16 @@ stage_enemies_table = {
 
 # stage_number: stage_time
 stage_time_table = {
-    1: 60,
-    2: 60,
-    3: 60,
-    4: 60,
-    5: 60
+    1: 5,
+    2: 5,
+    3: 5,
+    4: 5,
+    5: 5,
 }
+
+# event type: (EVENT, VALUE)
+LIFE, STAGE, SCORE = range(3)
+
 
 LAST_STAGE = 5
 
@@ -49,7 +54,9 @@ class RunState:
     def enter(stage):
         # 스테이지 넘버에 따라서 알맞은 적들의 리스트를 인스턴스해야 한다.
         # -> 매칭이 하고싶다 -> 테이블을 만들어라
-        stage.starship = StarShip()
+        if stage.stage_number == 1:
+            stage.starship = StarShip()
+
         stage.enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
                          Bee(400, 600), Bee(500, 600)]
 
@@ -59,7 +66,8 @@ class RunState:
 
     @staticmethod
     def do(stage):
-        pass
+        if stage.stage_timer < 0:
+            stage.update_state()
 
     @staticmethod
     def draw(stage):
@@ -69,12 +77,13 @@ class RunState:
 class ExitState:
     @staticmethod
     def enter(stage):
-        pass
+        stage.update_state()
 
     @staticmethod
     def exit(stage):
-        # 스테이지에서 나갈 때, 현재 스테이지가 마지막 스테이지인지 검사하고, 처리한다.
-        pass
+        if stage.stage_number == 5:
+            framework.quit()
+
 
     @staticmethod
     def do(stage):
@@ -94,6 +103,9 @@ stage_loop_table = {
 
 class Stage:
     def __init__(self):
+        # event type: (EVENT, VALUE)
+        self.ui_event_que = []
+
         self.stage_number = 1
         self.stage_timer = 0  # sec
         self.cur_state = EnterState
@@ -114,6 +126,7 @@ class Stage:
         self.cur_state = stage_loop_table[self.cur_state]
         if self.cur_state == EnterState:
             self.stage_number += 1
+            self.ui_event_que.append((STAGE, 1))
         self.cur_state.enter(self)
 
     def update(self):
@@ -126,3 +139,10 @@ class Stage:
     def handle_event(self, event):
         if self.starship is not None:
             self.starship.handle_event(event)
+
+    def put_ui_event(self):
+        if len(self.ui_event_que) > 0:
+            event = self.ui_event_que[0]
+            self.ui_event_que.remove(event)
+            return event
+        return None

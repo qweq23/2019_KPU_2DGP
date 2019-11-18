@@ -2,6 +2,7 @@ from pico2d import *
 import framework
 import gameworld
 
+import state_Pause
 
 # state_Main에서 할 일
 # 1. 게임 월드의 객체를 업데이트하고, 그린다
@@ -16,6 +17,11 @@ import gameworld
 # 메인 스테이트에서 백그라운드, 스테이지, UI를 조정할 일이 있을까?
 # 스테이지랑 UI는 조정할 일이 있겠지만 백그라운드는 없을 것 같다, 게임월드에만 넣어주면 될 듯
 
+# ui 매니저 객체는 여기에 인스턴스 된다. 이벤트를 넣어줄거면 여기서 넣어줘야 한다.
+# 하지만 ui에 필요한 정보는 스테이트가 모두 가지고 있다. 즉 스테이트가 ui 정보가 바뀌어야 할 때 ui 관련 함수를 불러서 사용할 수 있다.
+# 이거 두개를 어떻게 연결하지....
+
+
 from background_black import BackGround
 from stars import BG_Stars
 from UI_manager import UI_Manager
@@ -23,8 +29,9 @@ from stage import Stage
 
 
 name = "MainState"
-ui = None
 stage = None
+ui = None
+ui_event_que = []
 
 def enter():
     background = BackGround()
@@ -38,11 +45,14 @@ def enter():
 
 
 
+
+
 def exit():
     gameworld.clear()
 
 
 def pause():
+    # 플레이어가 속도를 가지고 있다면, 0으로 만들어줘야 한다
     pass
 
 
@@ -55,6 +65,8 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
+            framework.push_state(state_Pause)
         else:
             stage.handle_event(event)
 
@@ -62,6 +74,12 @@ def handle_events():
 def update():
     for gameobj in gameworld.all_objects():
         gameobj.update()
+
+    # ui event 넘겨주기
+    event = stage.put_ui_event()
+    if event is not None:
+
+        ui.add_event(event)
 
 
 

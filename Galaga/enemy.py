@@ -4,6 +4,23 @@ import random
 import framework
 import gameworld
 
+# 적 스테이트 구상
+# 1. 적이 등장할 때
+# 2. 정렬되서 좌우로 움직임
+# 3. 퇴장
+
+
+class ArriveState:
+    pass
+
+
+class StayState:
+    pass
+
+
+class LeaveState:
+    pass
+
 
 ACTION_PER_TIME = 2.0
 FRAMES_PER_ACTION = 2
