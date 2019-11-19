@@ -81,6 +81,7 @@ class Bee:
             self.dead_images[int(self.dying_frame)].draw(self.cur_x, self.cur_y, 50, 50)
 
 
+# 정렬된 상태일 때만 플레이어의 총알을 튕기도록 구현한다
 class Butterfly:
     image = None
 

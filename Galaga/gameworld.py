@@ -21,8 +21,14 @@ def remove_object(o):
 
 
 def clear():
+    global objects
     for o in all_objects():
-        del o
+        del o  # 각각 인스턴스 된 아이들을 삭제함
+
+    for i in range(len(objects)):
+        for j in range(len(objects[i])):
+            objects[i].pop()  # 월드 객체 리스트를 비워줌
+
 
 
 def destroy():

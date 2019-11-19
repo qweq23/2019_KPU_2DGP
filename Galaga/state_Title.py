@@ -17,12 +17,9 @@ def enter():
     stars = BG_Stars(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
     game_logo = GameLogo()
 
-    gameworld.add_objects([background, stars, game_logo], 0)
-
 
 def exit():
     gameworld.clear()
-    pass
 
 
 def pause():

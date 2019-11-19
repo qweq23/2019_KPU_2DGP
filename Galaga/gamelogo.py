@@ -1,6 +1,7 @@
 from pico2d import *
 
 import framework
+import gameworld
 
 TIME_PER_ACTION = 0.8
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -17,6 +18,7 @@ class GameLogo:
                        load_image('Image/title_Galaga4.png'), load_image('Image/title_Galaga3.png'),
                        load_image('Image/title_Galaga2.png'), load_image('Image/title_Galaga1.png')]
         self.frame = 0
+        gameworld.add_object(self, 1)
 
     def update(self):
         self.frame = (self.frame + ACTION_PER_TIME * FRAMES_PER_ACTION * framework.frame_time) % 8

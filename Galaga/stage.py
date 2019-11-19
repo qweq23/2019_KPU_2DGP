@@ -7,6 +7,11 @@ from starship import StarShip
 from enemy import *
 
 # 화면 중앙에 ready 뜨는 것도 스테이지에서 해야할 일 같다...
+# 플레이어가 죽었을 때, 게임 스테이지 진행에 영향을 미치는가?
+# 플레이어가 죽으면 퇴장하던 적이 다시 정렬 위치로 올라간다. -> 이거 구현 할거냐
+# 정렬된 상태면 적들의 정렬 상태가 변한다 -> 이것도 구현 할거냐...
+# 적이 등장할 때는 플레이어가 죽을 일이 없다
+
 
 # stage_number: enemies_list
 stage_enemies_table = {

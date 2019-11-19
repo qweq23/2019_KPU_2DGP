@@ -27,7 +27,7 @@ class ReadyState:
     @staticmethod
     def enter(player, event):
         if event == READY_TIMER:
-            player.ready_time = 3
+            player.ready_time = 2
 
     @staticmethod
     def exit(player, event):
