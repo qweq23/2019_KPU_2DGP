@@ -1,11 +1,10 @@
 from pico2d import *
-import time
 
 import framework
 import gameworld
 from bullet_player import PlayerBullet
 
-RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER, READY_TIMER, RESPAWN_TIMER = range(9)
+RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
 
 key_event_table = {
     (SDL_KEYDOWN, SDLK_RIGHT): RIGHT_DOWN,
@@ -23,106 +22,61 @@ TIME_PER_DYING_ACTION = 0.8
 DYING_ACTION_PER_TIME = 1.0 / TIME_PER_DYING_ACTION
 FRAMES_PER_DYING_ACTION = 4
 
-class ReadyState:
-    @staticmethod
-    def enter(player, event):
-        if event == READY_TIMER:
-            player.ready_time = 2
-
-    @staticmethod
-    def exit(player, event):
-        pass
-
-    @staticmethod
-    def do(player):
-        player.ready_time -= framework.frame_time
-        if player.ready_time < 0:
-            player.add_event(READY_TIMER)
-
-    @staticmethod
-    def draw(player):
-        framework.font.draw(280, 400, 'Ready', (251, 100, 0))
-
 
 class IdleState:
     @staticmethod
-    def enter(player, event):
+    def enter(starship, event):
         if event == RIGHT_DOWN:
-            player.velocity += PLAYER_SPEED_PPS
+            starship.velocity += PLAYER_SPEED_PPS
         elif event == LEFT_DOWN:
-            player.velocity -= PLAYER_SPEED_PPS
+            starship.velocity -= PLAYER_SPEED_PPS
         elif event == RIGHT_UP:
-            player.velocity -= PLAYER_SPEED_PPS
+            starship.velocity -= PLAYER_SPEED_PPS
         elif event == LEFT_UP:
-            player.velocity += PLAYER_SPEED_PPS
+            starship.velocity += PLAYER_SPEED_PPS
 
     @staticmethod
-    def exit(player, event):
+    def exit(starship, event):
         if event == SPACE_DOWN:
-            gameworld.add_object(PlayerBullet(player.x), 1)
+            gameworld.add_object(PlayerBullet(starship.x), 1)
 
     @staticmethod
-    def do(player):
-        player.x += player.velocity * framework.frame_time
-        player.x = clamp(25, player.x, 600 - 25)
+    def do(starship):
+        starship.x += starship.velocity * framework.frame_time
+        starship.x = clamp(25, starship.x, 600 - 25)
         # player.add_event(DEAD_TIMER)
 
     @staticmethod
-    def draw(player):
-        player.starship_image.draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
+    def draw(starship):
+        starship.starship_image.draw(starship.x, starship.y, PLAYER_SIZE, PLAYER_SIZE)
 
 
 class DeadState:
     @staticmethod
-    def enter(player, event):
+    def enter(starship, event):
         if event == DEAD_TIMER:
-            player.life -= 1
-            player.death_time = TIME_PER_DYING_ACTION
+            starship.death_time = TIME_PER_DYING_ACTION
 
     @staticmethod
-    def exit(player, event):
-        player.dying_frame = 0
+    def exit(starship, event):
+        starship.dying_frame = 0
 
     @staticmethod
-    def do(player):
-        player.dying_frame = (player.dying_frame + FRAMES_PER_DYING_ACTION * DYING_ACTION_PER_TIME
-                              * framework.frame_time) % 4
-        player.death_time -= framework.frame_time
-        if player.death_time < 0:
-            player.add_event(RESPAWN_TIMER)
+    def do(starship):
+        starship.dying_frame = (starship.dying_frame + FRAMES_PER_DYING_ACTION * DYING_ACTION_PER_TIME
+                                * framework.frame_time) % 4
+        starship.death_time -= framework.frame_time
+        if starship.death_time < 0:
+            gameworld.remove_object(starship)
+            del starship
 
 
     @staticmethod
-    def draw(player):
-        player.dying_images[int(player.dying_frame)].draw(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE)
-
-class RespawnState:
-    @staticmethod
-    def enter(player, event):
-        if event == RESPAWN_TIMER:
-            player.respawn_time = 2.5
-
-    @staticmethod
-    def exit(player, event):
-        pass
-
-    @staticmethod
-    def do(player):
-        player.respawn_time -= framework.frame_time
-        if player.respawn_time < 0:
-            player.add_event(READY_TIMER)
-
-    @staticmethod
-    def draw(player):
-        pass
+    def draw(starship):
+        starship.dying_images[int(starship.dying_frame)].draw(starship.x, starship.y, PLAYER_SIZE * 2, PLAYER_SIZE * 2)
 
 
 next_state_table = {
-
-    ReadyState: {RIGHT_UP: ReadyState, LEFT_UP: ReadyState,
-                 RIGHT_DOWN: ReadyState, LEFT_DOWN: ReadyState,
-                 SPACE_DOWN: ReadyState, SPACE_UP: ReadyState,
-                 READY_TIMER: IdleState},
 
     IdleState: {RIGHT_UP: IdleState, LEFT_UP: IdleState,
                 RIGHT_DOWN: IdleState, LEFT_DOWN: IdleState,
@@ -131,16 +85,9 @@ next_state_table = {
 
     DeadState: {RIGHT_UP: DeadState, LEFT_UP: DeadState,
                 RIGHT_DOWN: DeadState, LEFT_DOWN: DeadState,
-                SPACE_DOWN: DeadState, SPACE_UP: DeadState,
-                RESPAWN_TIMER: RespawnState},
+                SPACE_DOWN: DeadState, SPACE_UP: DeadState},
 
-    RespawnState: {RIGHT_UP: RespawnState, LEFT_UP: RespawnState,
-                   RIGHT_DOWN: RespawnState, LEFT_DOWN: RespawnState,
-                   SPACE_DOWN: RespawnState, SPACE_UP: RespawnState,
-                   READY_TIMER: ReadyState}
 }
-
-
 
 
 class StarShip:
@@ -150,20 +97,20 @@ class StarShip:
         self.starship_image = load_image('Image/player_17.png')
         self.dying_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
                              load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
-        self.life = 3
+
         self.velocity = 0
 
-        self.ready_time = 0
         self.death_time = 0
-        self.respawn_time = 0
-
         self.dying_frame = 0
 
         self.event_que = []
-        self.cur_state = ReadyState
-        self.cur_state.enter(self, READY_TIMER)
+        self.cur_state = IdleState
+        self.cur_state.enter(self, None)
 
         gameworld.add_object(self, 1)
+
+    def die(self):
+        self.add_event(DEAD_TIMER)
 
     def get_bb(self):
         length_from_center = PLAYER_SIZE / 2
@@ -192,6 +139,3 @@ class StarShip:
         if(event.type, event.key) in key_event_table:
             key_event = key_event_table[(event.type, event.key)]
             self.add_event(key_event)
-
-
-

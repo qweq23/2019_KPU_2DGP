@@ -6,12 +6,9 @@ import gameworld
 from starship import StarShip
 from enemy import *
 
-# 화면 중앙에 ready 뜨는 것도 스테이지에서 해야할 일 같다...
-# 플레이어가 죽었을 때, 게임 스테이지 진행에 영향을 미치는가?
-# 플레이어가 죽으면 퇴장하던 적이 다시 정렬 위치로 올라간다. -> 이거 구현 할거냐
-# 정렬된 상태면 적들의 정렬 상태가 변한다 -> 이것도 구현 할거냐...
-# 적이 등장할 때는 플레이어가 죽을 일이 없다
-
+READY_TIME = 3
+ENTER_TIME = 2
+EXIT_TIME = 2
 
 # stage_number: enemies_list
 stage_enemies_table = {
@@ -30,14 +27,13 @@ stage_time_table = {
 # event type: (EVENT, VALUE)
 LIFE, STAGE, SCORE = range(3)
 
-
 LAST_STAGE = 5
 
 
 class EnterState:
     @staticmethod
     def enter(stage):
-        stage.set_timer()
+        pass
 
     @staticmethod
     def exit(stage):
@@ -45,25 +41,44 @@ class EnterState:
 
     @staticmethod
     def do(stage):
-        if stage_time_table[stage.stage_number] - stage.stage_timer > 2:
+        stage.enter_timer -= framework.frame_time
+        if stage.enter_timer < 0:
             stage.update_state()
-
+            stage.enter_timer = ENTER_TIME
 
     @staticmethod
     def draw(stage):
-        stage.font.draw(280, 400, 'stage %d' % stage.stage_number, (251, 100, 0))
+        stage.font.draw(250, 400, 'stage %d' % stage.stage_number, (251, 100, 0))
+
+
+class ReadyState:
+    # 스타쉽이 생기기 전,
+    @staticmethod
+    def enter(stage):
+        pass
+
+    @staticmethod
+    def exit(stage):
+        stage.create_starship()
+
+    @staticmethod
+    def do(stage):
+        stage.ready_timer -= framework.frame_time
+        if stage.ready_timer < 0:
+            pass
+
+    @staticmethod
+    def draw(stage):
+        stage.font.draw(250, 400, 'Ready', (251, 100, 0))
 
 
 class RunState:
     @staticmethod
     def enter(stage):
-        # 스테이지 넘버에 따라서 알맞은 적들의 리스트를 인스턴스해야 한다.
-        # -> 매칭이 하고싶다 -> 테이블을 만들어라
-        if stage.stage_number == 1:
-            stage.starship = StarShip()
-
+        stage.create_starship()
         stage.enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
                          Bee(400, 600), Bee(500, 600)]
+
 
     @staticmethod
     def exit(stage):
@@ -71,7 +86,7 @@ class RunState:
 
     @staticmethod
     def do(stage):
-        if stage.stage_timer < 0:
+        if len(stage.enemies) == 0:
             stage.update_state()
 
     @staticmethod
@@ -82,21 +97,24 @@ class RunState:
 class ExitState:
     @staticmethod
     def enter(stage):
-        stage.update_state()
+        pass
 
     @staticmethod
     def exit(stage):
-        if stage.stage_number == 5:
+        if stage.stage_number == LAST_STAGE:
             framework.quit()
 
 
     @staticmethod
     def do(stage):
-        pass
+        stage.exit_timer -= framework.frame_time
+        if stage.exit_timer < 0:
+            stage.update_state()
+            stage.exit_timer = EXIT_TIME
 
     @staticmethod
     def draw(stage):
-        pass
+        stage.font.draw(250, 400, 'EXIT', (251, 100, 0))
 
 
 stage_loop_table = {
@@ -104,7 +122,6 @@ stage_loop_table = {
     RunState: ExitState,
     ExitState: EnterState
 }
-
 
 class Stage:
     def __init__(self):
@@ -116,15 +133,37 @@ class Stage:
         self.cur_state = EnterState
         self.cur_state.enter(self)
 
+        self.enter_timer = ENTER_TIME
+        self.ready_timer = READY_TIME
+        self.exit_timer = EXIT_TIME
+
         self.starship = None
         self.enemies = []
+        self.starship_bullets = []
+        self.enemy_bullets = []
 
         self.font = load_font('Font/LCD_Solid.ttf', 24)
 
         gameworld.add_object(self, 1)
 
+    def create_starship(self):
+        self.starship = StarShip()
+
+    def delete_starship(self):
+        self.starship.die()
+        self.starship = None
+
+
     def set_timer(self):
         self.stage_timer = stage_time_table[self.stage_number]
+
+    def put_ui_event(self):
+        if len(self.ui_event_que) == 0:
+            return None
+        else:
+            event = self.ui_event_que[0]
+            self.ui_event_que.remove(event)
+            return event
 
     def update_state(self):
         self.cur_state.exit(self)
@@ -135,7 +174,6 @@ class Stage:
         self.cur_state.enter(self)
 
     def update(self):
-        self.stage_timer -= framework.frame_time
         self.cur_state.do(self)
 
     def draw(self):
@@ -145,9 +183,13 @@ class Stage:
         if self.starship is not None:
             self.starship.handle_event(event)
 
-    def put_ui_event(self):
-        if len(self.ui_event_que) > 0:
-            event = self.ui_event_que[0]
-            self.ui_event_que.remove(event)
-            return event
-        return None
+
+def intersect_bb(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+    return True

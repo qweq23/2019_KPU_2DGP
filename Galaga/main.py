@@ -4,7 +4,7 @@ import state_Start
 
 
 # open_canvas 하고 이미지 로드해야한다
-pico2d.open_canvas(framework.CLIENT_WIDTH, framework.CLIENT_HEIGHT, sync=13)
+pico2d.open_canvas(800, 800, sync=13)
 
 framework.run(state_Start)
 

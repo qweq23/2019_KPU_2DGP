@@ -35,7 +35,7 @@ ui_event_que = []
 
 def enter():
     background = BackGround()
-    stars = BG_Stars(300, framework.CLIENT_HEIGHT / 2)
+    stars = BG_Stars(300, get_canvas_height() / 2)
 
     global stage
     stage = Stage()
@@ -77,8 +77,8 @@ def update():
 
     # ui event 넘겨주기
     event = stage.put_ui_event()
-    if event is not None:
 
+    if event is not None:
         ui.add_event(event)
 
 
@@ -91,13 +91,3 @@ def draw():
 
     update_canvas()
 
-
-def collide(a, b):
-    left_a, bottom_a, right_a, top_a = a.get_bb()
-    left_b, bottom_b, right_b, top_b = b.get_bb()
-
-    if left_a > right_b: return False
-    if right_a < left_b: return False
-    if top_a < bottom_b: return False
-    if bottom_a > top_b: return False
-    return True

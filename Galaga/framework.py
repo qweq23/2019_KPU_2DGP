@@ -40,17 +40,15 @@ class TestGameState:
         print("State [%s] draw" % self.name)
 
 
-# 전역 변수
-CLIENT_WIDTH, CLIENT_HEIGHT = 800, 800
 running = None
 stack = None
 frame_time = 0.0
 font = None
 
-# 상태 변환
+
 def change_state(state):
     global stack
-    if (len(stack) > 0):
+    if len(stack) > 0:
         # execute the current state's exit function
         stack[-1].exit()
         # remove the current state
@@ -61,7 +59,7 @@ def change_state(state):
 
 def push_state(state):
     global stack
-    if (len(stack) > 0):
+    if len(stack) > 0:
         stack[-1].pause()
     stack.append(state)
     state.enter()
@@ -69,18 +67,17 @@ def push_state(state):
 
 def pop_state():
     global stack
-    if (len(stack) > 0):
+    if len(stack) > 0:
         # execute the current state's exit function
         stack[-1].exit()
         # remove the current state
         stack.pop()
 
     # execute resume function of the previous state
-    if (len(stack) > 0):
+    if len(stack) > 0:
         stack[-1].resume()
 
 
-# 게임 실행 / 종료
 def quit():
     global running
     running = False
@@ -95,7 +92,7 @@ def run(start_state):
     font = load_font('Font/LCD_Solid.ttf', 24)
 
     current_time = time.time()
-    while (running):
+    while running:
         stack[-1].handle_events()
         stack[-1].update()
         stack[-1].draw()
@@ -113,7 +110,6 @@ def run(start_state):
 def test_game_framework():
     start_state = TestGameState('StartState')
     run(start_state)
-
 
 
 if __name__ == '__main__':

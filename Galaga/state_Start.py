@@ -45,5 +45,5 @@ def update():
 def draw():
     global image
     clear_canvas()
-    image.draw(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
+    image.draw(get_canvas_width() / 2, get_canvas_height() / 2)
     update_canvas()

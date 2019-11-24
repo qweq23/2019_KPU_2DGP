@@ -14,7 +14,7 @@ name = "TitleState"
 
 def enter():
     background = BackGround()
-    stars = BG_Stars(framework.CLIENT_WIDTH / 2, framework.CLIENT_HEIGHT / 2)
+    stars = BG_Stars(get_canvas_width() / 2, get_canvas_height() / 2)
     game_logo = GameLogo()
 
 
