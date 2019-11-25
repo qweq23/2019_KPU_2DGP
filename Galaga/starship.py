@@ -3,6 +3,7 @@ from pico2d import *
 import framework
 import gameworld
 from bullet_player import PlayerBullet
+from stage import starship_bullets
 
 RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
 
@@ -38,7 +39,7 @@ class IdleState:
     @staticmethod
     def exit(starship, event):
         if event == SPACE_DOWN:
-            gameworld.add_object(PlayerBullet(starship.x), 1)
+            starship.shoot()
 
     @staticmethod
     def do(starship):
@@ -73,8 +74,8 @@ class DeadState:
 
     @staticmethod
     def draw(starship):
-        starship.dying_images[int(starship.dying_frame)].draw(starship.x, starship.y, PLAYER_SIZE * 2, PLAYER_SIZE * 2)
-
+        starship.dying_images[int(starship.dying_frame)].draw(starship.x, starship.y,
+                                                              PLAYER_SIZE * 1.7, PLAYER_SIZE * 1.7)
 
 next_state_table = {
 
@@ -108,6 +109,11 @@ class StarShip:
         self.cur_state.enter(self, None)
 
         gameworld.add_object(self, 1)
+
+    def shoot(self):
+        bullet = PlayerBullet(self.x)
+        gameworld.add_object(bullet, 1)
+        starship_bullets.append(bullet)
 
     def die(self):
         self.add_event(DEAD_TIMER)

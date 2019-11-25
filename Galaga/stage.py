@@ -3,25 +3,22 @@ from pico2d import *
 import framework
 import gameworld
 
+starship_bullets = []
+enemy_bullets = []
+
 from starship import StarShip
 from enemy import *
 
-READY_TIME = 3
-ENTER_TIME = 2
+# 스테이트 바꾸는걸 어떻게 할까
+ENTER_READY, READY_RUN, RUN_READY, RUN_EXIT, EXIT_ENTER = range(5)
+
+READY_TIME = 2  # 3
+ENTER_TIME = 1  # 3
 EXIT_TIME = 2
 
 # stage_number: enemies_list
 stage_enemies_table = {
     1: []
-}
-
-# stage_number: stage_time
-stage_time_table = {
-    1: 5,
-    2: 5,
-    3: 5,
-    4: 5,
-    5: 5,
 }
 
 # event type: (EVENT, VALUE)
@@ -33,7 +30,7 @@ LAST_STAGE = 5
 class EnterState:
     @staticmethod
     def enter(stage):
-        pass
+        stage.enter_timer = ENTER_TIME
 
     @staticmethod
     def exit(stage):
@@ -44,7 +41,6 @@ class EnterState:
         stage.enter_timer -= framework.frame_time
         if stage.enter_timer < 0:
             stage.update_state()
-            stage.enter_timer = ENTER_TIME
 
     @staticmethod
     def draw(stage):
@@ -52,42 +48,58 @@ class EnterState:
 
 
 class ReadyState:
-    # 스타쉽이 생기기 전,
     @staticmethod
     def enter(stage):
-        pass
+        stage.ready_timer = READY_TIME
 
     @staticmethod
     def exit(stage):
-        stage.create_starship()
+        if stage.starship is None:
+            stage.create_starship()
 
     @staticmethod
     def do(stage):
         stage.ready_timer -= framework.frame_time
         if stage.ready_timer < 0:
-            pass
+            stage.update_state()
+
 
     @staticmethod
     def draw(stage):
-        stage.font.draw(250, 400, 'Ready', (251, 100, 0))
+        if stage.ready_timer < READY_TIME - 1:
+            stage.font.draw(250, 400, 'Ready', (251, 100, 0))
 
 
 class RunState:
     @staticmethod
     def enter(stage):
-        stage.create_starship()
         stage.enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
                          Bee(400, 600), Bee(500, 600)]
 
-
     @staticmethod
     def exit(stage):
+         # stage.delete_starship()
         pass
 
     @staticmethod
     def do(stage):
         if len(stage.enemies) == 0:
             stage.update_state()
+
+        for enemy in stage.enemies:
+            for bullet in starship_bullets:
+                if intersect_bb(enemy, bullet):
+                    stage.enemies.remove(enemy)
+                    enemy.die()
+                    starship_bullets.remove(bullet)
+                    gameworld.remove_object(bullet)
+
+        for enemy in stage.enemies:
+            if intersect_bb(stage.starship, enemy):
+                stage.die_starship()
+                stage.enemies.remove(enemy)
+                enemy.die()
+                break
 
     @staticmethod
     def draw(stage):
@@ -97,7 +109,7 @@ class RunState:
 class ExitState:
     @staticmethod
     def enter(stage):
-        pass
+        stage.exit_timer = EXIT_TIME
 
     @staticmethod
     def exit(stage):
@@ -110,7 +122,6 @@ class ExitState:
         stage.exit_timer -= framework.frame_time
         if stage.exit_timer < 0:
             stage.update_state()
-            stage.exit_timer = EXIT_TIME
 
     @staticmethod
     def draw(stage):
@@ -118,7 +129,8 @@ class ExitState:
 
 
 stage_loop_table = {
-    EnterState: RunState,
+    EnterState: ReadyState,
+    ReadyState: RunState,
     RunState: ExitState,
     ExitState: EnterState
 }
@@ -137,10 +149,10 @@ class Stage:
         self.ready_timer = READY_TIME
         self.exit_timer = EXIT_TIME
 
+        self.run_timer = 0
+
         self.starship = None
         self.enemies = []
-        self.starship_bullets = []
-        self.enemy_bullets = []
 
         self.font = load_font('Font/LCD_Solid.ttf', 24)
 
@@ -153,9 +165,11 @@ class Stage:
         self.starship.die()
         self.starship = None
 
-
-    def set_timer(self):
-        self.stage_timer = stage_time_table[self.stage_number]
+    def die_starship(self):
+        self.delete_starship()
+        self.cur_state.exit(self)
+        self.cur_state = ReadyState
+        self.cur_state.enter(self)
 
     def put_ui_event(self):
         if len(self.ui_event_que) == 0:
@@ -172,6 +186,7 @@ class Stage:
             self.stage_number += 1
             self.ui_event_que.append((STAGE, 1))
         self.cur_state.enter(self)
+
 
     def update(self):
         self.cur_state.do(self)
