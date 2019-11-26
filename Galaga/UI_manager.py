@@ -24,6 +24,9 @@ class UI_Manager:
 
         gameworld.add_object(self, 2)
 
+    def get_starship_life(self):
+        return self.ui_data[LIFE]
+
     def add_event(self, event):
         self.event_que.append(event)
 

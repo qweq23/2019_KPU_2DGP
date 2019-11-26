@@ -60,7 +60,8 @@ class DeadState:
 
     @staticmethod
     def exit(starship, event):
-        starship.dying_frame = 0
+        gameworld.remove_object(starship)
+        del starship
 
     @staticmethod
     def do(starship):
@@ -68,8 +69,7 @@ class DeadState:
                                 * framework.frame_time) % 4
         starship.death_time -= framework.frame_time
         if starship.death_time < 0:
-            gameworld.remove_object(starship)
-            del starship
+            starship.cur_state.exit(starship, None)
 
 
     @staticmethod
@@ -93,7 +93,7 @@ next_state_table = {
 
 class StarShip:
     def __init__(self):
-        self.x, self.y = 300, 50
+        self.x, self.y = 300, 75
 
         self.starship_image = load_image('Image/player_17.png')
         self.dying_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
@@ -111,7 +111,7 @@ class StarShip:
         gameworld.add_object(self, 1)
 
     def shoot(self):
-        bullet = PlayerBullet(self.x)
+        bullet = PlayerBullet(self.x, self.y + 25)
         gameworld.add_object(bullet, 1)
         starship_bullets.append(bullet)
 

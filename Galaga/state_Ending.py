@@ -2,31 +2,18 @@ from pico2d import *
 import framework
 import gameworld
 
-import state_Pause
-import state_Ending
+import state_Title
 
 from background_black import BackGround
 from stars import BG_Stars
-from UI_manager import UI_Manager
-from stage import Stage
 
 
-name = "MainState"
-stage = None
-ui = None
-ui_event_que = []
+name = "EndingState"
+
 
 def enter():
     background = BackGround()
-    stars = BG_Stars(300, get_canvas_height() / 2)
-
-    global stage
-    stage = Stage()
-
-    global ui
-    ui = UI_Manager()
-
-
+    stars = BG_Stars(400, get_canvas_height() / 2)
 
 
 def exit():
@@ -47,21 +34,13 @@ def handle_events():
     for event in events:
         if event.type == SDL_QUIT:
             framework.running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
-            framework.push_state(state_Pause)
-        else:
-            stage.handle_event(event)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_RETURN:
+            framework.push_state(state_Title)
 
 
 def update():
     for gameobj in gameworld.all_objects():
         gameobj.update()
-
-    # ui event 넘겨주기
-    event = stage.put_ui_event()
-
-    if event is not None:
-        ui.add_event(event)
 
 
 def draw():
@@ -70,5 +49,6 @@ def draw():
     for gameobj in gameworld.all_objects():
         gameobj.draw()
 
+    framework.font.draw(250, 400, 'Press enter to Restart', (251, 100, 0))
     update_canvas()
 

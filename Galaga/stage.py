@@ -6,25 +6,21 @@ import gameworld
 starship_bullets = []
 enemy_bullets = []
 
+import state_Ending
+
 from starship import StarShip
-from enemy import *
-
-# 스테이트 바꾸는걸 어떻게 할까
-ENTER_READY, READY_RUN, RUN_READY, RUN_EXIT, EXIT_ENTER = range(5)
-
-READY_TIME = 2  # 3
-ENTER_TIME = 1  # 3
-EXIT_TIME = 2
-
-# stage_number: enemies_list
-stage_enemies_table = {
-    1: []
-}
+from bee import Bee
+from butterfly import Butterfly
+from moth import Moth
 
 # event type: (EVENT, VALUE)
 LIFE, STAGE, SCORE = range(3)
+# 스테이트 바꾸는걸 어떻게 할까
+ENTER_READY, READY_RUN, RUN_READY, RUN_EXIT, EXIT_ENTER = range(5)
 
-LAST_STAGE = 5
+READY_TIME = 3  # 3
+ENTER_TIME = 3  # 3
+EXIT_TIME = 1
 
 
 class EnterState:
@@ -73,8 +69,21 @@ class ReadyState:
 class RunState:
     @staticmethod
     def enter(stage):
-        stage.enemies = [Bee(100, 600), Bee(200, 600), Bee(300, 600),
-                         Bee(400, 600), Bee(500, 600)]
+        if len(stage.enemies) == 0:
+            if stage.stage_number == 1:
+                stage.enemies = [Bee(1, 100, 600), Bee(1, 200, 600), Bee(1, 300, 600),
+                                 Bee(1, 400, 600), Bee(1, 500, 600)]
+                gameworld.add_objects(stage.enemies, 1)
+
+            if stage.stage_number == 2:
+                stage.enemies = [Butterfly(1, 100, 75), Butterfly(1, 200, 600), Butterfly(1, 300, 600),
+                                 Butterfly(1, 400, 600), Butterfly(1, 500, 600)]
+                gameworld.add_objects(stage.enemies, 1)
+
+            if stage.stage_number == 3:
+                stage.enemies = [Butterfly(1, 100, 600), Butterfly(1, 200, 600), Moth(1, 300, 600),
+                                 Moth(1, 400, 600), Moth(1, 500, 600)]
+                gameworld.add_objects(stage.enemies, 1)
 
     @staticmethod
     def exit(stage):
@@ -85,21 +94,33 @@ class RunState:
     def do(stage):
         if len(stage.enemies) == 0:
             stage.update_state()
+            return
 
         for enemy in stage.enemies:
             for bullet in starship_bullets:
                 if intersect_bb(enemy, bullet):
-                    stage.enemies.remove(enemy)
-                    enemy.die()
+                    enemy.hit()
+                    if enemy.is_explode():
+                        stage.enemies.remove(enemy)
+                        stage.ui_event_que.append((SCORE, 200))
                     starship_bullets.remove(bullet)
                     gameworld.remove_object(bullet)
 
         for enemy in stage.enemies:
             if intersect_bb(stage.starship, enemy):
                 stage.die_starship()
+                stage.ui_event_que.append((LIFE, -1))
+                enemy.hit()
                 stage.enemies.remove(enemy)
-                enemy.die()
-                break
+                return
+
+        for bullet in enemy_bullets:
+            if intersect_bb(stage.starship, bullet):
+                stage.die_starship()
+                stage.ui_event_que.append((LIFE, -1))
+                enemy_bullets.remove(bullet)
+                gameworld.remove_object(bullet)
+                return
 
     @staticmethod
     def draw(stage):
@@ -113,9 +134,8 @@ class ExitState:
 
     @staticmethod
     def exit(stage):
-        if stage.stage_number == LAST_STAGE:
-            framework.quit()
-
+        if stage.stage_number == 3:
+            framework.change_state(state_Ending)
 
     @staticmethod
     def do(stage):
@@ -125,7 +145,8 @@ class ExitState:
 
     @staticmethod
     def draw(stage):
-        stage.font.draw(250, 400, 'EXIT', (251, 100, 0))
+        # stage.font.draw(250, 400, 'EXIT', (251, 100, 0))
+        pass
 
 
 stage_loop_table = {

@@ -8,8 +8,8 @@ BULLET_SPEED_PPS = 700
 class PlayerBullet:
     image = None
 
-    def __init__(self, x):
-        self.x, self.y = x, 72
+    def __init__(self, x, y):
+        self.x, self.y = x, y
         if PlayerBullet.image is None:
             PlayerBullet.image = load_image('Image/player_bullet_9.png')
 
