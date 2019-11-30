@@ -1,6 +1,7 @@
 from pico2d import *
 import gameworld
 
+
 class BackGround:
     def __init__(self):
         self.image = load_image('Image/background_black_800.png')

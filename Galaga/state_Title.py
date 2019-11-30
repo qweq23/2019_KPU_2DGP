@@ -11,11 +11,24 @@ from background_black import BackGround
 
 name = "TitleState"
 
+background_image = None
+stars_image = []
+game_logo = None
+font = None
+
+stars_frame = 0
+
 
 def enter():
-    background = BackGround()
-    stars = BG_Stars(get_canvas_width() / 2, get_canvas_height() / 2)
+    global background_image
+    global stars_image
+    global game_logo
+    global font
+
+    background_image = load_image('Image/background_black_800.png')
     game_logo = GameLogo()
+    stars_image = [load_image('Image/stars1_800.png'), load_image('Image/stars2_800.png')]
+    font = load_font('Font/LCD_Solid.ttf', 24)
 
 
 def exit():
@@ -40,15 +53,17 @@ def handle_events():
 
 
 def update():
-    for gameobj in gameworld.all_objects():
-        gameobj.update()
+    global stars_frame
+    stars_frame = (stars_frame + framework.frame_time * 1.5) % 2
+    game_logo.update()
 
 
 def draw():
     clear_canvas()
 
-    for gameobj in gameworld.all_objects():
-        gameobj.draw()
-    framework.font.draw(250, 200, 'Press enter to start', (251, 100, 0))
+    background_image.draw(get_canvas_width() / 2, get_canvas_height() / 2)
+    stars_image[int(stars_frame)].draw(get_canvas_width() / 2, get_canvas_width() / 2)
+    game_logo.draw()
+    font.draw(250, 200, 'Press enter to start', (251, 100, 0))
 
     update_canvas()
