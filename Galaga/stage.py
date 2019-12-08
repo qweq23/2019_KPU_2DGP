@@ -174,6 +174,8 @@ class Stage:
 
         self.starship = None
         self.enemies = []
+        self.starship_bullets = []
+        self.enemy_bullets = []
 
         self.font = load_font('Font/LCD_Solid.ttf', 24)
 

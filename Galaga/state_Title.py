@@ -2,12 +2,9 @@ import framework
 from pico2d import *
 
 import state_Main
+import state_StageBuild
 
-import gameworld
-
-from stars import BG_Stars
 from gamelogo import GameLogo
-from background_black import BackGround
 
 name = "TitleState"
 
@@ -32,7 +29,7 @@ def enter():
 
 
 def exit():
-    gameworld.clear()
+    pass
 
 
 def pause():
@@ -49,7 +46,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             framework.running = False
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_RETURN):
-            framework.change_state(state_Main)
+            framework.change_state(state_StageBuild)
 
 
 def update():
