@@ -16,17 +16,19 @@ stage = None
 ui = None
 ui_event_que = []
 
+
 def enter():
     background = BackGround()
+    gameworld.add_object(background, 0)
+
     stars = BG_Stars(300, get_canvas_height() / 2)
+    gameworld.add_object(stars, 0)
 
     global stage
     stage = Stage()
 
     global ui
     ui = UI_Manager()
-
-
 
 
 def exit():
