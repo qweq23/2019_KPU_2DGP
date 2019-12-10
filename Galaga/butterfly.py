@@ -81,11 +81,6 @@ class Butterfly:
         gameworld.add_object(bullet, 1)
         state_StageMain.enemy_bullets.append(bullet)
 
-    def is_explode(self):
-        if self.cur_state == ExplodeState:
-            return True
-        return False
-
     def hit(self):
         if random.randint(0, 1) == 0:
             self.shoot()

@@ -76,7 +76,7 @@ class DeadState:
 
     @staticmethod
     def draw(starship):
-        starship.dying_images[int(starship.dying_frame)].\
+        starship.explode_images[int(starship.dying_frame)].\
             draw(starship.x, starship.y, PLAYER_SIZE * 1.7, PLAYER_SIZE * 1.7)
 
 
@@ -95,12 +95,17 @@ next_state_table = {
 
 
 class StarShip:
+    starship_image = None
+    explode_images = None
+
     def __init__(self):
         self.x, self.y = 300, 100
 
-        self.starship_image = load_image('Image/player_17.png')
-        self.dying_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
-                             load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
+        if StarShip.starship_image is None:
+            StarShip.starship_image = load_image('Image/player_17.png')
+        if StarShip.explode_images is None:
+            StarShip.explode_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
+                                       load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
 
         self.velocity = 0
 

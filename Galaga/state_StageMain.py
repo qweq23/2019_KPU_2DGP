@@ -88,7 +88,23 @@ def update():
 
     for enemy in enemies:
         if intersect_bb(starship, enemy):
-            pass
+            starship.die()
+            enemy.hit()
+            framework.push_state(state_StageRegen)
+            break
+
+    # 총알이 클라이언트 밖에 나갔나 검사
+    for bullet in starship_bullets:
+        if bullet.out_client():
+            starship_bullets.remove(bullet)
+            gameworld.remove_object(bullet)
+            break
+
+    for bullet in enemy_bullets:
+        if bullet.out_client():
+            enemy_bullets.remove(bullet)
+            gameworld.remove_object(bullet)
+            break
 
     if len(enemies) == 0:
         framework.change_state(state_StageClear)

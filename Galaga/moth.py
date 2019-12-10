@@ -1,7 +1,6 @@
 from enemy import *
 
 import state_StageMain
-# 초록 -> 파랑 -> 폭발
 
 
 class GreenState:
@@ -67,6 +66,12 @@ class ExplodeState:
         bee.explode_images[int(bee.explode_frame)].draw(bee.x, bee.y, 75, 75)
 
 
+next_state_table = {
+    GreenState: BlueState,
+    BlueState: ExplodeState,
+}
+
+
 class Moth:
     image = None
     explode_images = None
@@ -95,19 +100,9 @@ class Moth:
     def get_bb(self):
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20
 
-    def is_explode(self):
-        if self.cur_state == ExplodeState:
-            return True
-        return False
-
     def hit(self):
         self.cur_state.exit(self)
-
-        if self.cur_state == GreenState:
-            self.cur_state = BlueState
-        elif self.cur_state == BlueState:
-            self.cur_state = ExplodeState
-
+        self.cur_state = next_state_table[self.cur_state]
         self.cur_state.enter(self)
 
     def update(self):

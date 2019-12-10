@@ -2,7 +2,7 @@ from pico2d import *
 
 import framework
 
-BULLET_SPEED_PPS = 700
+BULLET_SPEED_PPS = 500
 
 
 class EnemyBullet:
@@ -12,6 +12,11 @@ class EnemyBullet:
         self.x, self.y = x, y
         if EnemyBullet.image is None:
             EnemyBullet.image = load_image('Image/enemy_bullet_9.png')
+
+    def out_client(self):
+        if self.y < 0:
+            return True
+        return False
 
     def get_bb(self):
         return self.x - 5, self.y - 10, self.x + 5, self.y + 10

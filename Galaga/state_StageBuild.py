@@ -4,15 +4,18 @@ import gameworld
 
 import state_Pause
 import state_StageEnter
+import state_Ranking
 
 from background_black import BackGround
-from stars import BG_Stars
+from stars import Stars
 from UI_manager import UI_Manager
 from starship import StarShip
 
+BUILD_TIME = 2
+
 name = "StageBuildState"
 font = None
-timer = 2
+timer = BUILD_TIME
 stars = None
 
 
@@ -24,7 +27,7 @@ def enter():
     gameworld.register_ui(ui)
 
     global stars
-    stars = BG_Stars(300, get_canvas_height() / 2)
+    stars = Stars(300, get_canvas_height() / 2)
     gameworld.add_object(stars, 0)
 
     global font
@@ -32,6 +35,9 @@ def enter():
 
 
 def exit():
+    global timer
+    timer = BUILD_TIME
+
     stars.move()
     starship = StarShip()
     gameworld.add_object(starship, 1)

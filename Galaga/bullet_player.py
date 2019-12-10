@@ -13,6 +13,11 @@ class PlayerBullet:
         if PlayerBullet.image is None:
             PlayerBullet.image = load_image('Image/player_bullet_9.png')
 
+    def out_client(self):
+        if self.y > 800:
+            return True
+        return False
+
     def get_bb(self):
         return self.x - 5, self.y - 10, self.x + 5, self.y + 10
 

@@ -3,32 +3,40 @@ from pico2d import *
 
 import state_StageBuild
 
+from background_black import BackGround
+from stars import Stars
 from gamelogo import GameLogo
 
 name = "TitleState"
 
-background_image = None
-stars_image = []
+background = None
+stars = None
 game_logo = None
 font = None
 
-stars_frame = 0
-
 
 def enter():
-    global background_image
-    global stars_image
-    global game_logo
-    global font
+    global background
+    background = BackGround()
 
-    background_image = load_image('Image/background_black_800.png')
+    global stars
+    stars = Stars(400, get_canvas_height() / 2)
+
+    global game_logo
     game_logo = GameLogo()
-    stars_image = [load_image('Image/stars1_800.png'), load_image('Image/stars2_800.png')]
+
+    global font
     font = load_font('Font/LCD_Solid.ttf', 24)
 
 
 def exit():
-    pass
+    global background
+    global stars
+    global game_logo
+
+    del background
+    del stars
+    del game_logo
 
 
 def pause():
@@ -49,16 +57,15 @@ def handle_events():
 
 
 def update():
-    global stars_frame
-    stars_frame = (stars_frame + framework.frame_time * 1.5) % 2
+    stars.update()
     game_logo.update()
 
 
 def draw():
     clear_canvas()
 
-    background_image.draw(get_canvas_width() / 2, get_canvas_height() / 2)
-    stars_image[int(stars_frame)].draw(get_canvas_width() / 2, get_canvas_width() / 2)
+    background.draw()
+    stars.draw()
     game_logo.draw()
     font.draw(250, 200, 'Press enter to start', (251, 100, 0))
 

@@ -5,6 +5,7 @@ import gameworld
 from bee import Bee
 from butterfly import Butterfly
 from moth import Moth
+from BehaviorTree import BehaviorTree, LeafNode, SelectorNode, SequenceNode
 
 # 하나의 파트 당 8마리의 적들을 인스턴스한다.
 # 프로그램 하기 편하려면, 파트별 리스트도 필요하고, 실제 위치별 리스트도 필요하다.
@@ -71,6 +72,9 @@ class Line:
         # [part0, part1, part2, part3, part4]
         self.enemies = [[], [], [], [], []]
 
+        self.bt = None
+        self.build_behavior_tree()
+
     def generate_enemy(self, stage_num):
         enemy_dic = enemy_generation_table[stage_num]
 
@@ -98,6 +102,6 @@ class Line:
             enemies += self.enemies[i]
         return enemies
 
-
-
-
+    def build_behavior_tree(self):
+        # self.bt = BehaviorTree(get_chase_node)
+        pass

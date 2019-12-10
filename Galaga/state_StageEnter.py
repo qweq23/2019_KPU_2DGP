@@ -7,11 +7,13 @@ import state_StageMain
 
 from starship import StarShip
 
+ENTER_TIMER = 5
+
 name = "StageEnterState"
 ui = None
 font = None
 starship = None
-timer = 5
+timer = ENTER_TIMER
 stage_num = 0
 
 
@@ -34,7 +36,7 @@ def enter():
 
 def exit():
     global timer
-    timer = 5
+    timer = ENTER_TIMER
 
 
 def pause():

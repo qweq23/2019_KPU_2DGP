@@ -4,25 +4,26 @@ import gameworld
 
 import state_Pause
 import state_StageEnter
-import state_Ending
+import state_Ranking
 
 from starship import StarShip
 
 # event type: (EVENT, VALUE)
 LIFE, STAGE, SCORE = range(3)
 
+CLEAR_TIME = 2
+
 name = "StageClearState"
 ui = None
 font = None
 starship = None
-timer = 2
+timer = CLEAR_TIME
 
 
 def enter():
     print('clear enter')
     global ui
-    if ui is None:
-        ui = gameworld.get_ui()
+    ui = gameworld.get_ui()
 
     global starship
     for gameobj in gameworld.all_objects():
@@ -36,7 +37,7 @@ def enter():
 
 def exit():
     global timer
-    timer = 2
+    timer = CLEAR_TIME
     ui.add_event((STAGE, 1))
     ui.update()
 
@@ -69,7 +70,7 @@ def update():
 
     if timer < 0:
         if ui.get_stage_num() == 5:
-            framework.change_state(state_Ending)
+            framework.change_state(state_Ranking)
             return
         framework.change_state(state_StageEnter)
 

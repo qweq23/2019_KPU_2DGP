@@ -1,5 +1,6 @@
-import state_StageMain
 from enemy import *
+
+import state_StageMain
 
 
 class IdleState:
@@ -45,24 +46,6 @@ class ExplodeState:
         bee.explode_images[int(bee.explode_frame)].draw(bee.x, bee.y, 75, 75)
 
 
-class AttackState:
-    @staticmethod
-    def enter(bee):
-        pass
-
-    @staticmethod
-    def exit(bee):
-        pass
-
-    @staticmethod
-    def do(bee):
-        pass
-
-    @staticmethod
-    def draw(bee):
-        pass
-
-
 class Bee:
     image = None
     explode_images = None
@@ -90,11 +73,6 @@ class Bee:
 
     def get_bb(self):
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15
-
-    def is_explode(self):
-        if self.cur_state == ExplodeState:
-            return True
-        return False
 
     def hit(self):
         self.cur_state.exit(self)
