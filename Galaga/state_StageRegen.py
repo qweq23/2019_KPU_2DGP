@@ -3,36 +3,30 @@ import framework
 import gameworld
 
 import state_Pause
-import state_StageEnter
+import state_StageMain
 
-from background_black import BackGround
-from stars import BG_Stars
-from UI_manager import UI_Manager
 from starship import StarShip
 
-name = "StageBuildState"
+REGEN_TIME = 6
+
+name = "StageRegenState"
 font = None
-timer = 2
-stars = None
+ui = None
+timer = REGEN_TIME
 
 
 def enter():
-    background = BackGround()
-    gameworld.add_object(background, 0)
-
-    ui = UI_Manager()
-    gameworld.register_ui(ui)
-
-    global stars
-    stars = BG_Stars(300, get_canvas_height() / 2)
-    gameworld.add_object(stars, 0)
+    global ui
+    ui = gameworld.get_ui()
 
     global font
     font = load_font('Font/LCD_Solid.ttf', 24)
 
+    global timer
+    timer = REGEN_TIME
+
 
 def exit():
-    stars.move()
     starship = StarShip()
     gameworld.add_object(starship, 1)
 
@@ -62,7 +56,7 @@ def update():
         gameobj.update()
 
     if timer < 0:
-        framework.change_state(state_StageEnter)
+        framework.pop_state()
 
 
 def draw():
@@ -71,7 +65,10 @@ def draw():
     for gameobj in gameworld.all_objects():
         gameobj.draw()
 
-    font.draw(250, 400, 'Start', (251, 100, 0))
+    if timer > 2:
+        pass
+    else:
+        font.draw(250, 400, 'Ready', (251, 100, 0))
 
     update_canvas()
 

@@ -1,5 +1,6 @@
 from enemy import *
 
+import state_StageMain
 # 초록 -> 파랑 -> 폭발
 
 
@@ -47,11 +48,11 @@ class ExplodeState:
     @staticmethod
     def enter(bee):
         bee.explode_timer = TIME_PER_EXPLODE_ACTION
+        state_StageMain.enemies.remove(bee)
 
     @staticmethod
     def exit(bee):
         gameworld.remove_object(bee)
-        del bee
 
     @staticmethod
     def do(bee):
@@ -68,20 +69,20 @@ class ExplodeState:
 
 class Moth:
     image = None
+    explode_images = None
 
-    def __init__(self, sorting_number, x, y):
+    def __init__(self, coord_pos):
         if Moth.image is None:
             Moth.image = load_image('Image/moth_sprite_34.png')
 
-        # 이거 해결하세요
-        self.explode_images = [load_image('Image/enemy_explosion0_39.png'),
-                               load_image('Image/enemy_explosion1_39.png'),
-                               load_image('Image/enemy_explosion2_39.png'),
-                               load_image('Image/enemy_explosion3_39.png'),
-                               load_image('Image/enemy_explosion4_39.png')]
+        if Moth.explode_images is None:
+            Moth.explode_images = [load_image('Image/enemy_explosion0_39.png'),
+                                   load_image('Image/enemy_explosion1_39.png'),
+                                   load_image('Image/enemy_explosion2_39.png'),
+                                   load_image('Image/enemy_explosion3_39.png'),
+                                   load_image('Image/enemy_explosion4_39.png')]
 
-        self.sorting_number = sorting_number
-        self.x, self.y = x, y
+        self.x, self.y = coord_pos[0], coord_pos[1]
 
         self.explode_timer = 0
 
@@ -114,3 +115,4 @@ class Moth:
 
     def draw(self):
         self.cur_state.draw(self)
+        draw_rectangle(*self.get_bb())

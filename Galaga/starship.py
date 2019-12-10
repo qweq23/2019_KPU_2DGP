@@ -2,8 +2,10 @@ from pico2d import *
 
 import framework
 import gameworld
+import state_StageMain
+
 from bullet_player import PlayerBullet
-from stage import starship_bullets
+
 
 RIGHT_DOWN, LEFT_DOWN, SPACE_DOWN, RIGHT_UP, LEFT_UP, SPACE_UP, DEAD_TIMER = range(7)
 
@@ -26,7 +28,7 @@ FRAMES_PER_DYING_ACTION = 4
 
 class IdleState:
     @staticmethod
-    def enter(starship, event):
+    def enter(starship, event=None):
         if event == RIGHT_DOWN:
             starship.velocity += PLAYER_SPEED_PPS
         elif event == LEFT_DOWN:
@@ -37,7 +39,7 @@ class IdleState:
             starship.velocity += PLAYER_SPEED_PPS
 
     @staticmethod
-    def exit(starship, event):
+    def exit(starship, event=None):
         if event == SPACE_DOWN:
             starship.shoot()
 
@@ -54,12 +56,12 @@ class IdleState:
 
 class DeadState:
     @staticmethod
-    def enter(starship, event):
+    def enter(starship, event=None):
         if event == DEAD_TIMER:
             starship.death_time = TIME_PER_DYING_ACTION
 
     @staticmethod
-    def exit(starship, event):
+    def exit(starship, event=None):
         gameworld.remove_object(starship)
         del starship
 
@@ -74,8 +76,9 @@ class DeadState:
 
     @staticmethod
     def draw(starship):
-        starship.dying_images[int(starship.dying_frame)].draw(starship.x, starship.y,
-                                                              PLAYER_SIZE * 1.7, PLAYER_SIZE * 1.7)
+        starship.dying_images[int(starship.dying_frame)].\
+            draw(starship.x, starship.y, PLAYER_SIZE * 1.7, PLAYER_SIZE * 1.7)
+
 
 next_state_table = {
 
@@ -93,7 +96,7 @@ next_state_table = {
 
 class StarShip:
     def __init__(self):
-        self.x, self.y = 300, 75
+        self.x, self.y = 300, 100
 
         self.starship_image = load_image('Image/player_17.png')
         self.dying_images = [load_image('Image/explosion0_39.png'), load_image('Image/explosion1_39.png'),
@@ -106,14 +109,16 @@ class StarShip:
 
         self.event_que = []
         self.cur_state = IdleState
-        self.cur_state.enter(self, None)
+        self.cur_state.enter(self)
 
-        gameworld.add_object(self, 1)
+    def set_velocity_zero(self):
+        self.velocity = 0
 
     def shoot(self):
         bullet = PlayerBullet(self.x, self.y + 25)
         gameworld.add_object(bullet, 1)
-        starship_bullets.append(bullet)
+        state_StageMain.starship_bullets.append(bullet)
+        print('shoot')
 
     def die(self):
         self.add_event(DEAD_TIMER)

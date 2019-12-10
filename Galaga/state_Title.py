@@ -1,7 +1,6 @@
 import framework
 from pico2d import *
 
-import state_Main
 import state_StageBuild
 
 from gamelogo import GameLogo

@@ -1,7 +1,9 @@
 from enemy import *
 import random
 from bullet_enemy import EnemyBullet
-from stage import enemy_bullets
+
+import state_StageMain
+
 
 class IdleState:
     @staticmethod
@@ -27,11 +29,11 @@ class ExplodeState:
     @staticmethod
     def enter(bee):
         bee.explode_timer = TIME_PER_EXPLODE_ACTION
+        state_StageMain.enemies.remove(bee)
 
     @staticmethod
     def exit(bee):
         gameworld.remove_object(bee)
-        del bee
 
     @staticmethod
     def do(bee):
@@ -48,19 +50,20 @@ class ExplodeState:
 
 class Butterfly:
     image = None
+    explode_images = None
 
-    def __init__(self, sorting_number, x, y):
+    def __init__(self, coord_pos):
         if Butterfly.image is None:
             Butterfly.image = load_image('Image/butterfly_sprite_34x17.png')
 
-        self.explode_images = [load_image('Image/enemy_explosion0_39.png'),
-                               load_image('Image/enemy_explosion1_39.png'),
-                               load_image('Image/enemy_explosion2_39.png'),
-                               load_image('Image/enemy_explosion3_39.png'),
-                               load_image('Image/enemy_explosion4_39.png')]
+        if Butterfly.explode_images is None:
+            Butterfly.explode_images = [load_image('Image/enemy_explosion0_39.png'),
+                                        load_image('Image/enemy_explosion1_39.png'),
+                                        load_image('Image/enemy_explosion2_39.png'),
+                                        load_image('Image/enemy_explosion3_39.png'),
+                                        load_image('Image/enemy_explosion4_39.png')]
 
-        self.sorting_number = sorting_number
-        self.x, self.y = x, y
+        self.x, self.y = coord_pos[0], coord_pos[1]
 
         self.explode_timer = 0
 
@@ -71,12 +74,12 @@ class Butterfly:
         self.cur_state.enter(self)
 
     def get_bb(self):
-        return self.x - 20, self.y - 20, self.x + 20, self.y + 20
+        return self.x - 15, self.y - 15, self.x + 15, self.y + 15
 
     def shoot(self):
         bullet = EnemyBullet(self.x, self.y - 25)
         gameworld.add_object(bullet, 1)
-        enemy_bullets.append(bullet)
+        state_StageMain.enemy_bullets.append(bullet)
 
     def is_explode(self):
         if self.cur_state == ExplodeState:
@@ -96,3 +99,4 @@ class Butterfly:
 
     def draw(self):
         self.cur_state.draw(self)
+        draw_rectangle(*self.get_bb())

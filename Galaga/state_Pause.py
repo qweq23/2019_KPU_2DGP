@@ -4,11 +4,15 @@ from pico2d import *
 import gameworld
 
 pause_button_image = None
+ui = None
 
 
 def enter():
     global pause_button_image
     pause_button_image = load_image('Image/pause_button_29.png')
+
+    global ui
+    ui = gameworld.get_ui()
 
 
 def exit():
@@ -42,6 +46,9 @@ def draw():
 
     for gameobj in gameworld.all_objects():
         gameobj.draw()
+
+    ui.draw()
+
     pause_button_image.draw(300, 400, 50, 50)
 
     update_canvas()

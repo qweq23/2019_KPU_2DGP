@@ -9,15 +9,21 @@ from stars import BG_Stars
 
 
 name = "EndingState"
-
+background = None
+stars = None
 
 def enter():
+    gameworld.clear()
+
+    global background
     background = BackGround()
+
+    global stars
     stars = BG_Stars(400, get_canvas_height() / 2)
 
 
 def exit():
-    gameworld.clear()
+    pass
 
 
 def pause():
@@ -38,15 +44,14 @@ def handle_events():
 
 
 def update():
-    for gameobj in gameworld.all_objects():
-        gameobj.update()
-
+    background.update()
+    stars.update()
 
 def draw():
     clear_canvas()
 
-    for gameobj in gameworld.all_objects():
-        gameobj.draw()
+    background.draw()
+    stars.draw()
 
     framework.font.draw(250, 400, 'Press enter to Restart', (251, 100, 0))
     update_canvas()

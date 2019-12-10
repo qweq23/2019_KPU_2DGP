@@ -1,6 +1,6 @@
 # layer 0: Background Objects
 # layer 1: Foreground Objects
-# layer 2: UI
+# layer 2: ui
 objects = [[], [], []]
 
 
@@ -30,7 +30,6 @@ def clear():
             objects[i].pop()  # 월드 객체 리스트를 비워줌
 
 
-
 def destroy():
     clear()
     objects.clear()
@@ -40,3 +39,12 @@ def all_objects():
     for i in range(len(objects)):
         for o in objects[i]:
             yield o
+
+
+def register_ui(ui_object):
+    global objects
+    objects[2].append(ui_object)
+
+
+def get_ui():
+    return objects[2][0]

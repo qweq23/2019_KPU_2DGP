@@ -20,13 +20,17 @@ class BG_Stars:
         self.front_stars_image = [load_image('Image/background_front1.png'),
                                   load_image('Image/background_front2.png')]
         self.front_stars_frame = 0
+        self.moving = False
 
     def update(self):
         self.front_stars_frame = \
             (self.front_stars_frame + FRAMES_PER_ACTION * ACTION_PER_TIME * framework.frame_time) % 2
-        self.bottom_pos_x = (self.bottom_pos_x + (STARS_SPEED_PPS * framework.frame_time)) % 800
+        if self.moving:
+            self.bottom_pos_x = (self.bottom_pos_x + (STARS_SPEED_PPS * framework.frame_time)) % 800
 
     def draw(self):
         self.front_stars_image[int(self.front_stars_frame)].clip_draw(
             0, int(self.bottom_pos_x), 600, 800, self.drawing_pos_x, self.drawing_pos_y)
 
+    def move(self):
+        self.moving = True

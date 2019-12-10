@@ -4,37 +4,41 @@ import gameworld
 
 import state_Pause
 import state_StageEnter
+import state_Ending
 
-from background_black import BackGround
-from stars import BG_Stars
-from UI_manager import UI_Manager
 from starship import StarShip
 
-name = "StageBuildState"
+# event type: (EVENT, VALUE)
+LIFE, STAGE, SCORE = range(3)
+
+name = "StageClearState"
+ui = None
 font = None
+starship = None
 timer = 2
-stars = None
 
 
 def enter():
-    background = BackGround()
-    gameworld.add_object(background, 0)
+    print('clear enter')
+    global ui
+    if ui is None:
+        ui = gameworld.get_ui()
 
-    ui = UI_Manager()
-    gameworld.register_ui(ui)
-
-    global stars
-    stars = BG_Stars(300, get_canvas_height() / 2)
-    gameworld.add_object(stars, 0)
+    global starship
+    for gameobj in gameworld.all_objects():
+        if isinstance(gameobj, StarShip):
+            starship = gameobj
+            break
 
     global font
     font = load_font('Font/LCD_Solid.ttf', 24)
 
 
 def exit():
-    stars.move()
-    starship = StarShip()
-    gameworld.add_object(starship, 1)
+    global timer
+    timer = 2
+    ui.add_event((STAGE, 1))
+    ui.update()
 
 
 def pause():
@@ -52,6 +56,8 @@ def handle_events():
             framework.running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
             framework.push_state(state_Pause)
+        else:
+            starship.handle_event(event)
 
 
 def update():
@@ -62,6 +68,9 @@ def update():
         gameobj.update()
 
     if timer < 0:
+        if ui.get_stage_num() == 5:
+            framework.change_state(state_Ending)
+            return
         framework.change_state(state_StageEnter)
 
 
@@ -71,7 +80,7 @@ def draw():
     for gameobj in gameworld.all_objects():
         gameobj.draw()
 
-    font.draw(250, 400, 'Start', (251, 100, 0))
+    # font.draw(250, 400, 'perfect!', (255, 0, 0))
 
     update_canvas()
 

@@ -1,6 +1,4 @@
 from pico2d import *
-import gameworld
-
 
 # event type: (EVENT, VALUE)
 LIFE, STAGE, SCORE = range(3)
@@ -13,7 +11,7 @@ class UI_Manager:
         self.ui_data = {
             LIFE: 3,
             STAGE: 1,
-            SCORE: 0
+            SCORE: 0,
         }
 
         # self.frame = 0 필요할까?
@@ -22,10 +20,14 @@ class UI_Manager:
         self.stage_image = load_image('Image/stages_ui_sprite_95x19.png')
         self.font = load_font('Font/LCD_Solid.ttf', 24)  # DRAW SCORE
 
-        gameworld.add_object(self, 2)
-
     def get_starship_life(self):
         return self.ui_data[LIFE]
+
+    def get_stage_num(self):
+        return self.ui_data[STAGE]
+
+    def get_score(self):
+        return self.ui_data[SCORE]
 
     def add_event(self, event):
         self.event_que.append(event)
