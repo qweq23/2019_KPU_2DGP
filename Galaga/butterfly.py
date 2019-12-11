@@ -12,7 +12,7 @@ class IdleState:
 
     @staticmethod
     def exit(bee):
-        pass
+        bee.hit_sound.play()
 
     @staticmethod
     def do(bee):
@@ -72,6 +72,9 @@ class Butterfly:
 
         self.cur_state = IdleState
         self.cur_state.enter(self)
+
+        self.hit_sound = load_wav('Sound/ButterflyDie.wav')
+        self.hit_sound.set_volume(256)
 
     def get_bb(self):
         return self.x - 15, self.y - 15, self.x + 15, self.y + 15

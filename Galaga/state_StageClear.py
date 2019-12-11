@@ -4,7 +4,7 @@ import gameworld
 
 import state_Pause
 import state_StageEnter
-import state_Ranking
+import state_StageEnd
 
 from starship import StarShip
 
@@ -21,7 +21,6 @@ timer = CLEAR_TIME
 
 
 def enter():
-    print('clear enter')
     global ui
     ui = gameworld.get_ui()
 
@@ -70,7 +69,7 @@ def update():
 
     if timer < 0:
         if ui.get_stage_num() == 5:
-            framework.change_state(state_Ranking)
+            framework.change_state(state_StageEnd)
             return
         framework.change_state(state_StageEnter)
 

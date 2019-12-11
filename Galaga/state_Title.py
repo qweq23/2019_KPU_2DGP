@@ -13,7 +13,7 @@ background = None
 stars = None
 game_logo = None
 font = None
-
+press_sound = None
 
 def enter():
     global background
@@ -27,6 +27,10 @@ def enter():
 
     global font
     font = load_font('Font/LCD_Solid.ttf', 24)
+
+    global press_sound
+    press_sound = load_wav('Sound/Select.wav')
+    press_sound.set_volume(64)
 
 
 def exit():
@@ -53,6 +57,7 @@ def handle_events():
         if event.type == SDL_QUIT:
             framework.running = False
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_RETURN):
+            press_sound.play()
             framework.change_state(state_StageBuild)
 
 

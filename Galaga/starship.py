@@ -30,13 +30,13 @@ class IdleState:
     @staticmethod
     def enter(starship, event=None):
         if event == RIGHT_DOWN:
-            starship.velocity += PLAYER_SPEED_PPS
+            starship.velocity = PLAYER_SPEED_PPS
         elif event == LEFT_DOWN:
-            starship.velocity -= PLAYER_SPEED_PPS
+            starship.velocity = -PLAYER_SPEED_PPS
         elif event == RIGHT_UP:
-            starship.velocity -= PLAYER_SPEED_PPS
+            starship.velocity = 0
         elif event == LEFT_UP:
-            starship.velocity += PLAYER_SPEED_PPS
+            starship.velocity = 0
 
     @staticmethod
     def exit(starship, event=None):
@@ -116,22 +116,25 @@ class StarShip:
         self.cur_state = IdleState
         self.cur_state.enter(self)
 
+        self.shoot_sound = load_wav('Sound/Bullet.wav')
+        self.explode_sound = load_wav('Sound/PlayerDie.wav')
+        self.explode_sound.set_volume(128)
+
     def set_velocity_zero(self):
         self.velocity = 0
 
     def shoot(self):
+        self.shoot_sound.play()
         bullet = PlayerBullet(self.x, self.y + 25)
         gameworld.add_object(bullet, 1)
         state_StageMain.starship_bullets.append(bullet)
-        print('shoot')
 
-    def die(self):
+    def explode(self):
+        self.explode_sound.play()
         self.add_event(DEAD_TIMER)
 
     def get_bb(self):
-        length_from_center = PLAYER_SIZE / 2
-        return self.x - length_from_center, self.y - length_from_center, \
-            self.x + length_from_center, self.y + length_from_center
+        return self.x - 25, self.y - 25, self.x + 25, self.y + 10
 
     def update_state(self):
         # 이벤트 큐에 뭐가 있으면

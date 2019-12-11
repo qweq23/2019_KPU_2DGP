@@ -11,9 +11,10 @@ from stars import Stars
 from UI_manager import UI_Manager
 from starship import StarShip
 
-BUILD_TIME = 2
+BUILD_TIME = 5
 
 name = "StageBuildState"
+sound = None
 font = None
 timer = BUILD_TIME
 stars = None
@@ -32,6 +33,10 @@ def enter():
 
     global font
     font = load_font('Font/LCD_Solid.ttf', 24)
+
+    global sound
+    sound = load_wav("Sound/StageEnter.wav")
+    sound.play()
 
 
 def exit():

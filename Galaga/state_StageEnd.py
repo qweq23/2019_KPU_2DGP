@@ -3,31 +3,30 @@ import framework
 import gameworld
 
 import state_Pause
+import state_Ranking
 
 from starship import StarShip
 
-REGEN_TIME = 6
+END_TIMER = 2
 
-name = "StageRegenState"
-font = None
+name = "StageEndState"
 ui = None
-timer = REGEN_TIME
+font = None
+starship = None
+timer = END_TIMER
 
 
 def enter():
+    print('end')
     global ui
     ui = gameworld.get_ui()
 
     global font
     font = load_font('Font/LCD_Solid.ttf', 24)
 
-    global timer
-    timer = REGEN_TIME
-
 
 def exit():
-    starship = StarShip()
-    gameworld.add_object(starship, 1)
+    pass
 
 
 def pause():
@@ -55,7 +54,7 @@ def update():
         gameobj.update()
 
     if timer < 0:
-        framework.pop_state()
+        framework.change_state(state_Ranking)
 
 
 def draw():
@@ -63,11 +62,6 @@ def draw():
 
     for gameobj in gameworld.all_objects():
         gameobj.draw()
-
-    if timer > 2:
-        pass
-    else:
-        font.draw(250, 400, 'Ready', (251, 100, 0))
 
     update_canvas()
 

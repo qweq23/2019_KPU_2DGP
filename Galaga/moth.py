@@ -10,7 +10,7 @@ class GreenState:
 
     @staticmethod
     def exit(bee):
-        pass
+        bee.chang_color_sound.play()
 
     @staticmethod
     def do(bee):
@@ -30,7 +30,7 @@ class BlueState:
 
     @staticmethod
     def exit(bee):
-        pass
+        bee.dying_sound.play()
 
     @staticmethod
     def do(bee):
@@ -96,6 +96,9 @@ class Moth:
 
         self.cur_state = GreenState
         self.cur_state.enter(self)
+
+        self.chang_color_sound = load_wav('Sound/MothChangeColor.wav')
+        self.dying_sound = load_wav('Sound/MothDie.wav')
 
     def get_bb(self):
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20

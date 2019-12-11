@@ -5,11 +5,15 @@ import gameworld
 import state_Pause
 import state_StageRegen
 import state_StageClear
+import state_StageEnd
 
 from starship import StarShip
 from enemyline import Line
 
 name = "StageMainState"
+
+# event type: (EVENT, VALUE)
+LIFE, STAGE, SCORE = range(3)
 ui = None
 
 starship = None
@@ -17,6 +21,28 @@ line = None
 enemies = []
 starship_bullets = []
 enemy_bullets = []
+
+
+def hit_starship():
+    starship.explode()
+    ui.add_event((LIFE, -1))
+    ui.update()
+    if ui.get_starship_life() == 0:
+        framework.change_state(state_StageEnd)
+    else:
+        framework.push_state(state_StageRegen)
+
+
+
+def intersect_bb(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b: return False
+    if right_a < left_b: return False
+    if top_a < bottom_b: return False
+    if bottom_a > top_b: return False
+    return True
 
 
 def enter():
@@ -80,17 +106,15 @@ def update():
 
     for bullet in enemy_bullets:
         if intersect_bb(starship, bullet):
-            starship.die()
             enemy_bullets.remove(bullet)
             gameworld.remove_object(bullet)
-            framework.push_state(state_StageRegen)
+            hit_starship()
             break
 
     for enemy in enemies:
         if intersect_bb(starship, enemy):
-            starship.die()
             enemy.hit()
-            framework.push_state(state_StageRegen)
+            hit_starship()
             break
 
     # 총알이 클라이언트 밖에 나갔나 검사
@@ -110,7 +134,6 @@ def update():
         framework.change_state(state_StageClear)
 
 
-
 def draw():
     clear_canvas()
 
@@ -118,14 +141,3 @@ def draw():
         gameobj.draw()
 
     update_canvas()
-
-
-def intersect_bb(a, b):
-    left_a, bottom_a, right_a, top_a = a.get_bb()
-    left_b, bottom_b, right_b, top_b = b.get_bb()
-
-    if left_a > right_b: return False
-    if right_a < left_b: return False
-    if top_a < bottom_b: return False
-    if bottom_a > top_b: return False
-    return True

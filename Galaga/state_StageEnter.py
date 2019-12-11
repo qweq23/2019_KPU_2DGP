@@ -34,6 +34,8 @@ def enter():
             break
 
 
+
+
 def exit():
     global timer
     timer = ENTER_TIMER

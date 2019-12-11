@@ -9,6 +9,7 @@ from BehaviorTree import BehaviorTree, LeafNode, SelectorNode, SequenceNode
 
 # 하나의 파트 당 8마리의 적들을 인스턴스한다.
 # 프로그램 하기 편하려면, 파트별 리스트도 필요하고, 실제 위치별 리스트도 필요하다.
+# 공격하는 것을 구현해야 하는데
 
 BEE, BFLY, MOTH = range(3)
 coord_x = [75, 125, 175, 225, 275, 325, 375, 425, 475, 525]
@@ -103,5 +104,7 @@ class Line:
         return enemies
 
     def build_behavior_tree(self):
+        # 행동에 순서가 있을 때
+        # 1.
         # self.bt = BehaviorTree(get_chase_node)
         pass
