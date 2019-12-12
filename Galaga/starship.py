@@ -30,13 +30,13 @@ class IdleState:
     @staticmethod
     def enter(starship, event=None):
         if event == RIGHT_DOWN:
-            starship.velocity = PLAYER_SPEED_PPS
+            starship.velocity += PLAYER_SPEED_PPS
         elif event == LEFT_DOWN:
-            starship.velocity = -PLAYER_SPEED_PPS
+            starship.velocity -= PLAYER_SPEED_PPS
         elif event == RIGHT_UP:
-            starship.velocity = 0
+            starship.velocity -= PLAYER_SPEED_PPS
         elif event == LEFT_UP:
-            starship.velocity = 0
+            starship.velocity += PLAYER_SPEED_PPS
 
     @staticmethod
     def exit(starship, event=None):
@@ -119,6 +119,9 @@ class StarShip:
         self.shoot_sound = load_wav('Sound/Bullet.wav')
         self.explode_sound = load_wav('Sound/PlayerDie.wav')
         self.explode_sound.set_volume(128)
+
+    def get_pos(self):
+        return self.x, self.y
 
     def set_velocity_zero(self):
         self.velocity = 0

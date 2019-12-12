@@ -13,6 +13,7 @@ from starship import StarShip
 
 BUILD_TIME = 5
 
+
 name = "StageBuildState"
 sound = None
 font = None

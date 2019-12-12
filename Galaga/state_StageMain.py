@@ -22,6 +22,9 @@ enemies = []
 starship_bullets = []
 enemy_bullets = []
 
+def get_starship_pos():
+    return starship.get_pos()
+
 
 def hit_starship():
     starship.explode()
@@ -31,7 +34,6 @@ def hit_starship():
         framework.change_state(state_StageEnd)
     else:
         framework.push_state(state_StageRegen)
-
 
 
 def intersect_bb(a, b):
@@ -96,9 +98,16 @@ def update():
     for gameobj in gameworld.all_objects():
         gameobj.update()
 
+    line.update()
+
     for bullet in starship_bullets:
         for enemy in enemies:
             if intersect_bb(bullet, enemy):
+                if enemy.is_attack_state():
+                    ui.add_event((SCORE, 250))
+                else:
+                    ui.add_event((SCORE, 200))
+
                 enemy.hit()
                 starship_bullets.remove(bullet)
                 gameworld.remove_object(bullet)

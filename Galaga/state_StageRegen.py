@@ -64,9 +64,7 @@ def draw():
     for gameobj in gameworld.all_objects():
         gameobj.draw()
 
-    if timer > 2:
-        pass
-    else:
+    if timer < 2:
         font.draw(250, 400, 'Ready', (251, 100, 0))
 
     update_canvas()

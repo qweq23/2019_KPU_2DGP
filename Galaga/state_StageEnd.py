@@ -7,22 +7,23 @@ import state_Ranking
 
 from starship import StarShip
 
-END_TIMER = 2
+END_TIMER = 4
 
 name = "StageEndState"
 ui = None
-font = None
 starship = None
 timer = END_TIMER
 
 
 def enter():
-    print('end')
     global ui
     ui = gameworld.get_ui()
 
-    global font
-    font = load_font('Font/LCD_Solid.ttf', 24)
+    global starship
+    for gameobj in gameworld.all_objects():
+        if isinstance(gameobj, StarShip):
+            starship = gameobj
+            break
 
 
 def exit():
@@ -44,6 +45,9 @@ def handle_events():
             framework.running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
             framework.push_state(state_Pause)
+        else:
+            if starship is not None:
+                starship.handle_event(event)
 
 
 def update():

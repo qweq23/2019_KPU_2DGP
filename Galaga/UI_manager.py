@@ -9,7 +9,7 @@ class UI_Manager:
         self.event_que = []
 
         self.ui_data = {
-            LIFE: 1,
+            LIFE: 3,
             STAGE: 1,
             SCORE: 0,
         }

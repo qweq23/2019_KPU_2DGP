@@ -10,10 +10,9 @@ import state_Title
 from background_black import BackGround
 from stars import Stars
 
-# 날짜 저장해보자
-
 
 name = "EndingState"
+sound = None
 background = None
 stars = None
 new_records = []
@@ -53,8 +52,14 @@ def get_current_rank():
             print(current_rank)
             break
 
+    reversed_records.reverse()
+
 
 def enter():
+    global sound
+    sound = load_music('Sound/Credits.wav')
+    sound.repeat_play()
+
     global new_records
     new_records = []
 
@@ -74,8 +79,16 @@ def enter():
 
 
 
+
 def exit():
-    pass
+    global sound
+    del sound
+
+    global background
+    del background
+
+    global stars
+    del stars
 
 
 def pause():
@@ -93,6 +106,7 @@ def handle_events():
             framework.running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_RETURN:
             framework.push_state(state_Title)
+            sound.stop()
 
 
 def update():
@@ -112,9 +126,9 @@ def draw():
 
     for i in range(len(new_records)):
         if i + 1 == current_rank:
-            framework.font.draw(200, 500 - (i * 40), '%2d. %5d' % (i + 1, new_records[i]), (255, 255, 0))
+            framework.font.draw(200, 500 - (i * 40), '%2d.      %5d' % (i + 1, new_records[i]), (255, 255, 0))
         else:
-            framework.font.draw(200, 500 - (i * 40), '%2d. %5d' % (i + 1, new_records[i]), (0, 255, 255))
+            framework.font.draw(200, 500 - (i * 40), '%2d.      %5d' % (i + 1, new_records[i]), (0, 255, 255))
 
     update_canvas()
 

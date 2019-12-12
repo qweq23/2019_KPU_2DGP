@@ -1,15 +1,16 @@
 from pico2d import *
+import random as r
 
+import framework
 import gameworld
+
+import state_StageMain
 
 from bee import Bee
 from butterfly import Butterfly
 from moth import Moth
 from BehaviorTree import BehaviorTree, LeafNode, SelectorNode, SequenceNode
 
-# 하나의 파트 당 8마리의 적들을 인스턴스한다.
-# 프로그램 하기 편하려면, 파트별 리스트도 필요하고, 실제 위치별 리스트도 필요하다.
-# 공격하는 것을 구현해야 하는데
 
 BEE, BFLY, MOTH = range(3)
 coord_x = [75, 125, 175, 225, 275, 325, 375, 425, 475, 525]
@@ -19,13 +20,13 @@ coord_y = [700, 650, 600, 550, 500]
 enemy_generation_table = {
     1: {0: [BFLY, BFLY, BFLY, BFLY, BEE, BEE, BEE, BEE],
         1: [MOTH, MOTH, MOTH, MOTH, BFLY, BFLY, BFLY, BFLY],
-        2: [BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY],
+        2: [],
         3: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
-        4: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
+        4: [],
         },
     2: {0: [BFLY, BFLY, BFLY, BFLY, BEE, BEE, BEE, BEE],
         1: [MOTH, MOTH, MOTH, MOTH, BFLY, BFLY, BFLY, BFLY],
-        2: [BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY],
+        2: [],
         3: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
         4: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
         },
@@ -67,16 +68,41 @@ enemy_position_table = {
         (coord_x[0], coord_y[4]), (coord_x[1], coord_y[4]), (coord_x[8], coord_y[4]), (coord_x[9], coord_y[4])],
 }
 
+attack_timer_table = {
+    0: 3,
+    1: 3,
+    2: 2,
+    3: 2,
+    4: 1,
+}
+
 
 class Line:
     def __init__(self):
         # [part0, part1, part2, part3, part4]
         self.enemies = [[], [], [], [], []]
 
+        self.stage_num = 0
+        self.attack_timer = 0
+
         self.bt = None
         self.build_behavior_tree()
 
+    def update(self):
+        self.attack_timer -= framework.frame_time
+        if self.attack_timer < 0:
+            self.attack_timer = attack_timer_table[self.stage_num]
+            self.order_attack()
+
+    def order_attack(self):
+        part = r.randint(0, len(state_StageMain.enemies) - 1)
+        if not state_StageMain.enemies[part].attacking:
+            state_StageMain.enemies[part].attacking = True
+            state_StageMain.enemies[part].attack(state_StageMain.get_starship_pos())
+
     def generate_enemy(self, stage_num):
+        print(stage_num)
+        self.stage_num = stage_num - 1
         enemy_dic = enemy_generation_table[stage_num]
 
         for part_num in range(len(self.enemies)):
@@ -104,7 +130,15 @@ class Line:
         return enemies
 
     def build_behavior_tree(self):
-        # 행동에 순서가 있을 때
-        # 1.
-        # self.bt = BehaviorTree(get_chase_node)
-        pass
+        root_node = SequenceNode('Root')
+        part1_enter_node = SequenceNode('Part1 Enter')
+        part2_enter_node = SequenceNode('Part2 Enter')
+        part3_enter_node = SequenceNode('Part3 Enter')
+        part4_enter_node = SequenceNode('Part4 Enter')
+        part5_enter_node = SequenceNode('Part5 Enter')
+        attack_node = SequenceNode('Attack')
+
+        root_node.add_children(part1_enter_node, part2_enter_node, part3_enter_node,
+                               part4_enter_node, part5_enter_node, attack_node)
+        self.bt = BehaviorTree(root_node)
+

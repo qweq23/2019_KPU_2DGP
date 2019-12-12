@@ -87,6 +87,7 @@ class Moth:
                                    load_image('Image/enemy_explosion3_39.png'),
                                    load_image('Image/enemy_explosion4_39.png')]
 
+        self.attacking = False
         self.x, self.y = coord_pos[0], coord_pos[1]
 
         self.explode_timer = 0
@@ -99,6 +100,12 @@ class Moth:
 
         self.chang_color_sound = load_wav('Sound/MothChangeColor.wav')
         self.dying_sound = load_wav('Sound/MothDie.wav')
+
+    def is_attack_state(self):
+        return False
+
+    def attack(self, starship_pos):
+        pass
 
     def get_bb(self):
         return self.x - 20, self.y - 20, self.x + 20, self.y + 20
@@ -113,4 +120,3 @@ class Moth:
 
     def draw(self):
         self.cur_state.draw(self)
-        draw_rectangle(*self.get_bb())
