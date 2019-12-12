@@ -4,7 +4,7 @@ import random
 import framework
 import gameworld
 
-MOVE_SPEED_PPS = 300
+ATTACK_SPEED_PPS = 300
 
 TIME_PER_FLYING_ACTION = 0.6
 FLYING_ACTION_PER_TIME = 1.0 / TIME_PER_FLYING_ACTION

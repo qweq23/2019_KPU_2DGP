@@ -32,7 +32,7 @@ enemy_generation_table = {
         },
     3: {0: [BFLY, BFLY, BFLY, BFLY, BEE, BEE, BEE, BEE],
         1: [MOTH, MOTH, MOTH, MOTH, BFLY, BFLY, BFLY, BFLY],
-        2: [BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY, BFLY],
+        2: [],
         3: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
         4: [BEE, BEE, BEE, BEE, BEE, BEE, BEE, BEE],
         },
@@ -95,10 +95,15 @@ class Line:
             self.order_attack()
 
     def order_attack(self):
-        part = r.randint(0, len(state_StageMain.enemies) - 1)
-        if not state_StageMain.enemies[part].attacking:
-            state_StageMain.enemies[part].attacking = True
-            state_StageMain.enemies[part].attack(state_StageMain.get_starship_pos())
+        number_of_enemy = len(state_StageMain.enemies)
+        num1 = r.randint(0, number_of_enemy - 1)
+        num2 = r.randint(0, number_of_enemy - 1)
+
+        if not state_StageMain.enemies[num1].is_attack_state():
+            state_StageMain.enemies[num1].attack(state_StageMain.get_starship_pos())
+        if not state_StageMain.enemies[num2].is_attack_state():
+            state_StageMain.enemies[num2].attack(state_StageMain.get_starship_pos())
+            print('order attack')
 
     def generate_enemy(self, stage_num):
         print(stage_num)
@@ -117,6 +122,8 @@ class Line:
                     enemy = Butterfly(enemy_position_table[part_num][number])
                 elif enemy_type == MOTH:
                     enemy = Moth(enemy_position_table[part_num][number])
+                else:
+                    pass
 
                 self.enemies[part_num].append(enemy)
                 number += 1

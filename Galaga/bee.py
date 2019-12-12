@@ -11,7 +11,7 @@ class IdleState:
 
     @staticmethod
     def exit(bee):
-        bee.hit_sound.play()
+        pass
 
     @staticmethod
     def do(bee):
@@ -27,6 +27,7 @@ class IdleState:
 class ExplodeState:
     @staticmethod
     def enter(bee):
+        bee.hit_sound.play()
         state_StageMain.enemies.remove(bee)
         bee.explode_timer = TIME_PER_EXPLODE_ACTION
 
@@ -132,7 +133,7 @@ class Bee:
         return BehaviorTree.SUCCESS
 
     def move_to_target(self):
-        self.speed = MOVE_SPEED_PPS
+        self.speed = ATTACK_SPEED_PPS
         self.calculate_current_position()
         distance = (self.target_pos[0] - self.x) ** 2 + (self.target_pos[1] - self.y) ** 2
         if distance < 10 ** 2:

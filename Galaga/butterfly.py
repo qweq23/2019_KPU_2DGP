@@ -14,7 +14,7 @@ class IdleState:
 
     @staticmethod
     def exit(bee):
-        bee.hit_sound.play()
+        pass
 
     @staticmethod
     def do(bee):
@@ -23,13 +23,13 @@ class IdleState:
 
     @staticmethod
     def draw(bee):
-        bee.image.clip_draw(int(bee.flying_frame) * 17, 0, 17, 17,
-                            bee.x, bee.y, 50, 50)
+        bee.image.clip_draw(int(bee.flying_frame) * 17, 0, 17, 17, bee.x, bee.y, 50, 50)
 
 
 class ExplodeState:
     @staticmethod
     def enter(bee):
+        bee.hit_sound.play()
         bee.explode_timer = TIME_PER_EXPLODE_ACTION
         state_StageMain.enemies.remove(bee)
 
@@ -135,7 +135,7 @@ class Butterfly:
         return BehaviorTree.SUCCESS
 
     def move_to_target(self):
-        self.speed = MOVE_SPEED_PPS
+        self.speed = ATTACK_SPEED_PPS
         self.calculate_current_position()
         distance = (self.target_pos[0] - self.x) ** 2 + (self.target_pos[1] - self.y) ** 2
         if distance < 10 ** 2:

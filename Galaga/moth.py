@@ -2,6 +2,9 @@ from enemy import *
 
 import state_StageMain
 
+MOVE_TIME = 2
+MOVE_SPEED_PPS = 100
+
 
 class GreenState:
     @staticmethod
@@ -16,6 +19,14 @@ class GreenState:
     def do(bee):
         bee.flying_frame = (bee.flying_frame + FRAMES_PER_FLYING_ACTION * FLYING_ACTION_PER_TIME
                             * framework.frame_time) % FRAMES_PER_FLYING_ACTION
+
+        bee.x += MOVE_SPEED_PPS * bee.dir * framework.frame_time
+
+        bee.move_timer -= framework.frame_time
+        if bee.move_timer < 0:
+            bee.dir = -bee.dir
+            bee.move_timer = MOVE_TIME
+
 
     @staticmethod
     def draw(bee):
@@ -36,6 +47,13 @@ class BlueState:
     def do(bee):
         bee.flying_frame = (bee.flying_frame + FRAMES_PER_FLYING_ACTION * FLYING_ACTION_PER_TIME
                             * framework.frame_time) % FRAMES_PER_FLYING_ACTION
+
+        bee.x += MOVE_SPEED_PPS * bee.dir * framework.frame_time
+
+        bee.move_timer -= framework.frame_time
+        if bee.move_timer < 0:
+            bee.dir = -bee.dir
+            bee.move_timer = MOVE_TIME
 
     @staticmethod
     def draw(bee):
@@ -87,7 +105,9 @@ class Moth:
                                    load_image('Image/enemy_explosion3_39.png'),
                                    load_image('Image/enemy_explosion4_39.png')]
 
-        self.attacking = False
+        self.move_timer = 1
+        self.speed = MOVE_SPEED_PPS
+        self.dir = 1
         self.x, self.y = coord_pos[0], coord_pos[1]
 
         self.explode_timer = 0
@@ -100,6 +120,7 @@ class Moth:
 
         self.chang_color_sound = load_wav('Sound/MothChangeColor.wav')
         self.dying_sound = load_wav('Sound/MothDie.wav')
+        self.attacking = False
 
     def is_attack_state(self):
         return False

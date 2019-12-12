@@ -29,14 +29,18 @@ FRAMES_PER_DYING_ACTION = 4
 class IdleState:
     @staticmethod
     def enter(starship, event=None):
-        if event == RIGHT_DOWN:
+        if event == RIGHT_DOWN and not starship.right_down:
             starship.velocity += PLAYER_SPEED_PPS
-        elif event == LEFT_DOWN:
+            starship.right_down = True
+        elif event == LEFT_DOWN and not starship.left_down:
             starship.velocity -= PLAYER_SPEED_PPS
-        elif event == RIGHT_UP:
+            starship.left_down = True
+        elif event == RIGHT_UP and starship.right_down:
             starship.velocity -= PLAYER_SPEED_PPS
-        elif event == LEFT_UP:
+            starship.right_down = False
+        elif event == LEFT_UP and starship.left_down:
             starship.velocity += PLAYER_SPEED_PPS
+            starship.left_down = False
 
     @staticmethod
     def exit(starship, event=None):
@@ -108,6 +112,8 @@ class StarShip:
                                        load_image('Image/explosion2_39.png'), load_image('Image/explosion3_39.png')]
 
         self.velocity = 0
+        self.left_down = False
+        self.right_down = False
 
         self.death_time = 0
         self.dying_frame = 0
